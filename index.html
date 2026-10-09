@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5b300">
+  <title>VoltGuide</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>⚡ VoltGuide</h1>
+    <p class="sous-titre">L'assistant de l'électricien, conforme NF C 15-100</p>
+  </header>
+
+  <main>
+    <!-- ===== Onglet : Pièces ===== -->
+    <section id="pieces" class="onglet actif">
+      <h2>Guide pièce par pièce</h2>
+      <div id="liste-pieces" class="grille"></div>
+      <div id="detail-piece"></div>
+    </section>
+
+    <!-- ===== Onglet : Calculs ===== -->
+    <section id="calculs" class="onglet">
+      <h2>Section de câble et chute de tension</h2>
+      <form id="form-calcul" class="carte">
+        <label>Puissance de l'appareil (W)
+          <input type="number" id="c-puissance" value="3000" min="1" required>
+        </label>
+        <label>Longueur du câble (m)
+          <input type="number" id="c-longueur" value="20" min="1" required>
+        </label>
+        <label>Alimentation
+          <select id="c-reseau">
+            <option value="mono">Monophasé 230 V</option>
+            <option value="tri">Triphasé 400 V</option>
+          </select>
+        </label>
+        <label>Type de circuit
+          <select id="c-type">
+            <option value="3">Éclairage (chute max 3 %)</option>
+            <option value="5" selected>Autres usages (chute max 5 %)</option>
+          </select>
+        </label>
+        <button type="submit">Calculer</button>
+      </form>
+      <div id="resultat-calcul"></div>
+
+      <h2>Tableau des circuits</h2>
+      <div class="tableau-scroll">
+        <table id="table-circuits">
+          <thead><tr><th>Circuit</th><th>Section</th><th>Protection</th><th>Limite</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Check-list ===== -->
+    <section id="checklist" class="onglet">
+      <h2>Autocontrôle avant le Consuel</h2>
+      <p id="progression" class="progression"></p>
+      <div id="liste-checklist"></div>
+      <button id="reset-checklist" class="secondaire">Tout décocher</button>
+    </section>
+
+    <p class="avertissement">
+      ⚠️ VoltGuide est une aide. Elle ne remplace pas la norme NF C 15-100 officielle.
+      <br>Données version <span id="version"></span>, mises à jour le <span id="maj"></span>.
+    </p>
+  </main>
+
+  <nav>
+    <button data-onglet="pieces" class="actif">🏠<span>Pièces</span></button>
+    <button data-onglet="calculs">🧮<span>Calculs</span></button>
+    <button data-onglet="checklist">✅<span>Check-list</span></button>
+  </nav>
+
+  <script src="data/regles.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

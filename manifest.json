@@ -1,0 +1,10 @@
+{
+  "name": "VoltGuide",
+  "short_name": "VoltGuide",
+  "description": "L'assistant de l'électricien, conforme NF C 15-100",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f6f3",
+  "theme_color": "#f5b300",
+  "lang": "fr"
+}
