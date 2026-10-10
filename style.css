@@ -11,6 +11,11 @@
   --ok: #1f8a4c;
   --erreur: #c62828;
   --ombre: 0 1px 3px rgba(0, 0, 0, .08);
+  /* couleurs des fils dans les schémas */
+  --fil-phase: #d32f2f;
+  --fil-neutre: #1e6fd9;
+  --fil-retour: #ef7d00;
+  --fil-navette: #8e44ad;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -24,6 +29,10 @@
     --ok: #4cc27f;
     --erreur: #ff6b5b;
     --ombre: none;
+    --fil-phase: #ff5a52;
+    --fil-neutre: #5aa2ff;
+    --fil-retour: #ffa133;
+    --fil-navette: #c08ae0;
   }
 }
 
@@ -38,14 +47,14 @@ body {
   padding-bottom: 90px; /* place pour la barre du bas */
 }
 
-/* ===== En-tête ===== */
+/* ===== En-tête + recherche ===== */
 header {
   background: var(--sombre);
   color: #fff;
-  padding: 14px 16px;
-  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
   position: sticky; top: 0; z-index: 10;
 }
+.entete-haut { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; max-width: 720px; margin-inline: auto; }
 .logo {
   width: 42px; height: 42px; border-radius: 10px;
   background: var(--accent);
@@ -54,21 +63,42 @@ header {
 }
 header h1 { margin: 0; font-size: 1.3rem; letter-spacing: .5px; }
 .sous-titre { margin: 0; font-size: .8rem; color: #b8bec7; }
+#recherche {
+  display: block; width: 100%; max-width: 720px; margin: 0 auto;
+  padding: 10px 14px; font-size: 1rem;
+  border: none; border-radius: 10px;
+  background: #2c3036; color: #fff;
+}
+#recherche::placeholder { color: #9aa1ab; }
+#recherche:focus { outline: 2px solid var(--accent); }
 
 main { max-width: 720px; margin: 0 auto; padding: 8px 16px; }
 h2 { font-size: 1.2rem; margin: 20px 0 8px; }
-.carte h2 { margin-top: 0; }
+h3 { font-size: 1rem; margin: 16px 0 8px; }
+.carte h2, .carte h3:first-child { margin-top: 0; }
 .intro { color: var(--discret); margin: 0 0 12px; font-size: .95rem; }
 
 /* ===== Onglets ===== */
 .onglet, .sous-calcul { display: none; }
 .onglet.actif, .sous-calcul.actif { display: block; }
 
+/* Pendant une recherche, on cache les onglets et on montre les résultats */
+#resultats-recherche { display: none; }
+.recherche-active #resultats-recherche { display: block; }
+.recherche-active .onglet.actif { display: none; }
+
+.resultat-recherche {
+  display: block; width: 100%; text-align: left;
+  color: var(--texte); font-size: 1rem; cursor: pointer;
+}
+.resultat-recherche span { display: block; color: var(--discret); font-size: .9rem; margin-top: 2px; }
+
 nav {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex;
   background: var(--sombre);
   padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
 }
 nav button {
   flex: 1;
@@ -76,11 +106,11 @@ nav button {
   padding: 10px 0 12px;
   color: #8d949e;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  font-size: .75rem;
+  font-size: .7rem;
   cursor: pointer;
   border-top: 3px solid transparent;
 }
-nav button .ico { font-size: 1.4rem; filter: grayscale(1); opacity: .7; }
+nav button .ico { font-size: 1.35rem; filter: grayscale(1); opacity: .7; }
 nav button.actif { color: #fff; font-weight: 600; border-top-color: var(--accent); }
 nav button.actif .ico { filter: none; opacity: 1; }
 
@@ -93,6 +123,8 @@ nav button.actif .ico { filter: none; opacity: 1; }
   margin-bottom: 12px;
   box-shadow: var(--ombre);
 }
+.titre-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.titre-ligne h2 { margin: 0; }
 
 /* ===== Grille des pièces ===== */
 .grille {
@@ -130,26 +162,38 @@ nav button.actif .ico { filter: none; opacity: 1; }
 /* ===== Formulaires ===== */
 label { display: block; margin-bottom: 14px; font-size: .9rem; color: var(--discret); }
 label small { display: block; margin-top: 2px; }
-input[type="number"], select {
+input[type="number"], input[type="text"], input[type="date"], select, textarea {
   display: block; width: 100%;
   margin-top: 4px; padding: 12px;
-  font-size: 1.05rem;
+  font-size: 1.05rem; font-family: inherit;
   border: 2px solid var(--bordure);
   border-radius: 10px;
   background: var(--fond); color: var(--texte);
 }
-input:focus, select:focus { outline: none; border-color: var(--accent); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
 input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 8px; }
-.deux-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.deux-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; align-items: end; }
+.cases { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; margin-bottom: 8px; }
+.cases label { display: flex; align-items: center; gap: 8px; color: var(--texte); margin-bottom: 10px; }
+.cases input { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
 
-button[type="submit"], .secondaire {
+button[type="submit"], .secondaire, .principal {
   width: 100%; padding: 14px;
   font-size: 1.05rem; font-weight: 700;
   border-radius: 10px; border: none;
   background: var(--accent); color: #1b1d21;
   cursor: pointer;
+  margin-bottom: 8px;
 }
-.secondaire { background: var(--bordure); color: var(--texte); margin-top: 8px; font-weight: 600; }
+.secondaire { background: var(--bordure); color: var(--texte); font-weight: 600; }
+.danger { color: var(--erreur); }
+.lien { background: none; border: none; color: var(--discret); font-size: 1rem; padding: 8px 0; cursor: pointer; }
+.petit-bouton {
+  background: var(--bordure); color: var(--texte);
+  border: none; border-radius: 8px;
+  width: 36px; height: 36px; flex-shrink: 0;
+  cursor: pointer;
+}
 
 /* ===== Résultats ===== */
 .resultat { border-left: 5px solid var(--accent); }
@@ -159,8 +203,30 @@ button[type="submit"], .secondaire {
 .erreur { color: var(--erreur); }
 .info { background: var(--accent-doux); border-radius: 8px; padding: 8px 10px; font-size: .9rem; }
 
-ul.regles { padding-left: 20px; margin: 8px 0 0; }
-ul.regles li { margin-bottom: 6px; }
+ul.regles, ol.regles { padding-left: 20px; margin: 8px 0 0; }
+.regles li { margin-bottom: 6px; }
+
+/* ===== Sources et badges ===== */
+.source { font-size: .8rem; color: var(--discret); margin: 12px 0 0; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.alerte-badge { background: var(--accent-doux); color: var(--texte); }
+.ok-badge { background: var(--ok); color: #fff; }
+
+/* ===== Favoris ===== */
+.etoile {
+  background: none; border: none;
+  font-size: 1.5rem; line-height: 1;
+  color: var(--discret); cursor: pointer;
+  padding: 4px; margin-left: auto;
+}
+.etoile.actif { color: var(--accent); }
+.favoris { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.favoris .intro { margin: 0; }
+.pastille-favori {
+  padding: 8px 14px; border-radius: 999px;
+  border: 2px solid var(--accent); background: var(--accent-doux);
+  color: var(--texte); font-size: .9rem; cursor: pointer;
+}
 
 /* ===== Bilan de puissance ===== */
 .appareil { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--bordure); margin: 0; color: var(--texte); }
@@ -168,17 +234,22 @@ ul.regles li { margin-bottom: 6px; }
 .appareil span { flex: 1; }
 .appareil input[type="number"] { width: 90px; margin: 0; padding: 6px 8px; font-size: .95rem; }
 
+/* ===== Générateur de tableau ===== */
+.differentiel h3 { display: flex; justify-content: space-between; gap: 8px; margin-top: 0; }
+.compteur { background: var(--accent-doux); border-radius: 999px; padding: 0 10px; font-size: .85rem; white-space: nowrap; }
+.differentiel td:first-child { font-weight: 500; }
+
 /* ===== Fiches (accordéon) ===== */
 details.carte { padding: 0; }
 details summary {
-  padding: 16px;
+  padding: 14px 16px;
   font-weight: 600; font-size: 1.05rem;
   cursor: pointer;
   list-style: none;
   display: flex; align-items: center; gap: 10px;
 }
 details summary::-webkit-details-marker { display: none; }
-details summary::after { content: "›"; margin-left: auto; font-size: 1.5rem; color: var(--discret); transition: transform .2s; }
+details summary::after { content: "›"; font-size: 1.5rem; color: var(--discret); transition: transform .2s; }
 details[open] summary::after { transform: rotate(90deg); }
 details .contenu { padding: 0 16px 16px; }
 details h3 { font-size: .95rem; margin: 12px 0 6px; color: var(--discret); }
@@ -190,6 +261,43 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--bordure)
 th { color: var(--discret); font-weight: 600; }
 td:first-child { font-weight: 600; }
 
+/* ===== Schémas de câblage ===== */
+.schema svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 12px auto 0; }
+.schema text { fill: var(--texte); font-size: 13px; }
+.schema .sch-petit { font-size: 10px; fill: var(--discret); }
+.schema .sch-titre { font-weight: 700; }
+.sch-phase, .sch-neutre, .sch-retour, .sch-navette { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.sch-phase { stroke: var(--fil-phase); }
+.sch-neutre { stroke: var(--fil-neutre); }
+.sch-retour { stroke: var(--fil-retour); }
+.sch-navette { stroke: var(--fil-navette); }
+.sch-composant { fill: none; stroke: var(--texte); stroke-width: 2; }
+.sch-boite { fill: var(--fond); stroke: var(--texte); stroke-width: 1.5; }
+.sch-borne { fill: var(--texte); }
+.legende { font-size: .8rem; color: var(--discret); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.trait { display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+.sch-phase-fond { background: var(--fil-phase); }
+.sch-neutre-fond { background: var(--fil-neutre); }
+.sch-retour-fond { background: var(--fil-retour); }
+.sch-navette-fond { background: var(--fil-navette); }
+
+/* ===== Carnet de chantier ===== */
+.verdict { margin: -8px 0 12px; font-size: .9rem; font-weight: 600; }
+.ligne-differentiel { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.ligne-differentiel input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--ok); flex-shrink: 0; }
+.ligne-differentiel input[type="text"] { margin: 0; padding: 8px 10px; }
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.photo { margin: 0; position: relative; }
+.photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; }
+.photo input { padding: 6px 8px; font-size: .85rem; }
+.photo .petit-bouton { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, .6); color: #fff; }
+.bouton-photo {
+  display: block; text-align: center;
+  padding: 14px; border-radius: 10px;
+  border: 2px dashed var(--bordure);
+  color: var(--texte); font-weight: 600; cursor: pointer; margin: 0;
+}
+
 /* ===== Check-list ===== */
 .point { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; color: var(--texte); margin: 0; font-size: .95rem; border-bottom: 1px solid var(--bordure); }
 .point:last-child { border-bottom: none; }
@@ -198,8 +306,26 @@ td:first-child { font-weight: 600; }
 .barre { height: 10px; background: var(--bordure); border-radius: 999px; overflow: hidden; }
 #barre-remplie { height: 100%; width: 0; background: var(--ok); transition: width .3s; }
 
-/* ===== Schéma salle de bain ===== */
-.schema svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 12px auto 0; }
-.schema text { fill: var(--texte); font-size: 13px; }
-
 .avertissement { font-size: .8rem; color: var(--discret); text-align: center; margin-top: 32px; }
+
+/* ===== Petits écrans ===== */
+@media (max-width: 380px) {
+  .deux-colonnes, .cases { grid-template-columns: 1fr; }
+}
+
+/* ===== Impression / PDF ===== */
+#rapport { display: none; }
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  header, nav, form, .pastilles, .avertissement, button, #resultats-recherche { display: none !important; }
+  .carte { box-shadow: none; border-color: #ccc; break-inside: avoid; }
+  /* Rapport de chantier : on n'imprime que lui */
+  .impression-rapport main { display: none; }
+  .impression-rapport #rapport { display: block; padding: 0 8mm; }
+  #rapport h1 { font-size: 1.5rem; }
+  #rapport .notes { white-space: pre-wrap; }
+  .rapport-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .rapport-photos figure { margin: 0; break-inside: avoid; }
+  .rapport-photos img { width: 100%; border-radius: 6px; }
+  .rapport-photos figcaption { font-size: .85rem; }
+}

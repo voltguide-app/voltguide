@@ -10,14 +10,20 @@
 </head>
 <body>
   <header>
-    <div class="logo">⚡</div>
-    <div>
-      <h1>VoltGuide</h1>
-      <p class="sous-titre">L'assistant de l'électricien · NF C 15-100</p>
+    <div class="entete-haut">
+      <div class="logo">⚡</div>
+      <div>
+        <h1>VoltGuide</h1>
+        <p class="sous-titre">L'assistant de l'électricien · NF C 15-100</p>
+      </div>
     </div>
+    <input type="search" id="recherche" placeholder="🔍 Rechercher : prise, 32 A, salle de bain…" aria-label="Rechercher">
   </header>
 
   <main>
+    <!-- ===== Résultats de recherche ===== -->
+    <section id="resultats-recherche"></section>
+
     <!-- ===== Onglet : Pièces ===== -->
     <section id="pieces" class="onglet actif">
       <h2>Guide pièce par pièce</h2>
@@ -30,14 +36,59 @@
     <section id="calculs" class="onglet">
       <h2>Calculateurs</h2>
       <div class="pastilles" id="choix-calcul">
-        <button data-calcul="calc-section" class="actif">Section de câble</button>
+        <button data-calcul="calc-tableau" class="actif">⭐ Tableau électrique</button>
+        <button data-calcul="calc-section">Section de câble</button>
         <button data-calcul="calc-differentiels">Différentiels</button>
         <button data-calcul="calc-bilan">Bilan de puissance</button>
         <button data-calcul="calc-ohm">Loi d'Ohm</button>
       </div>
 
+      <!-- Générateur de tableau -->
+      <div id="calc-tableau" class="sous-calcul actif">
+        <form id="form-tableau" class="carte">
+          <p class="intro">Décris le logement : l'app propose les circuits, les différentiels et le matériel.</p>
+          <h3>Logement</h3>
+          <div class="deux-colonnes">
+            <label>Surface totale (m²) <input type="number" id="t-surface" value="90" min="1" required></label>
+            <label>Séjour (m²) <input type="number" id="t-sejour" value="30" min="1" required></label>
+            <label>Cuisine (m²) <input type="number" id="t-cuisine" value="10" min="1" required></label>
+            <label>Entrée / couloir (m²) <input type="number" id="t-entree" value="6" min="0"></label>
+            <label>Chambres <input type="number" id="t-chambres" value="3" min="0" required></label>
+            <label>Salles de bain <input type="number" id="t-sdb" value="1" min="0" required></label>
+            <label>WC <input type="number" id="t-wc" value="1" min="0" required></label>
+            <label>Distance moyenne tableau → pièces (m) <input type="number" id="t-distance" value="10" min="1" required></label>
+          </div>
+
+          <h3>Équipements</h3>
+          <div class="cases">
+            <label><input type="checkbox" id="t-plaque" checked> Plaque de cuisson</label>
+            <label><input type="checkbox" id="t-four" checked> Four</label>
+            <label><input type="checkbox" id="t-lv" checked> Lave-vaisselle</label>
+            <label><input type="checkbox" id="t-ll" checked> Lave-linge</label>
+            <label><input type="checkbox" id="t-sl"> Sèche-linge</label>
+            <label><input type="checkbox" id="t-congel"> Congélateur</label>
+            <label><input type="checkbox" id="t-ce" checked> Chauffe-eau électrique</label>
+            <label><input type="checkbox" id="t-vmc" checked> VMC</label>
+            <label><input type="checkbox" id="t-volets"> Volets roulants</label>
+            <label><input type="checkbox" id="t-ext"> Prises extérieures</label>
+          </div>
+          <div class="deux-colonnes">
+            <label>Chauffage électrique (W total) <input type="number" id="t-chauffage" value="0" min="0" step="500"></label>
+            <label>Véhicule électrique
+              <select id="t-vehicule">
+                <option value="">Aucun</option>
+                <option value="prise">Prise renforcée</option>
+                <option value="borne">Borne 7,4 kW</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Générer le tableau</button>
+        </form>
+        <div id="resultat-tableau"></div>
+      </div>
+
       <!-- Section de câble -->
-      <div id="calc-section" class="sous-calcul actif">
+      <div id="calc-section" class="sous-calcul">
         <form id="form-section" class="carte">
           <label>Puissance de l'appareil (W)
             <input type="number" id="c-puissance" value="3000" min="1" required>
@@ -111,8 +162,65 @@
 
     <!-- ===== Onglet : Fiches ===== -->
     <section id="fiches" class="onglet">
+      <h2>⭐ Mes favoris</h2>
+      <div id="liste-favoris" class="favoris"></div>
+      <h2>Schémas de câblage</h2>
+      <div id="liste-schemas"></div>
       <h2>Fiches techniques</h2>
       <div id="liste-fiches"></div>
+    </section>
+
+    <!-- ===== Onglet : Chantiers ===== -->
+    <section id="chantiers" class="onglet">
+      <div id="vue-liste-chantiers">
+        <h2>Carnet de chantier</h2>
+        <button type="button" id="nouveau-chantier" class="principal">+ Nouveau chantier</button>
+        <div id="liste-chantiers"></div>
+      </div>
+
+      <div id="vue-chantier" hidden>
+        <button type="button" id="retour-chantiers" class="lien">← Tous les chantiers</button>
+        <div class="carte">
+          <h3>Informations</h3>
+          <label>Nom du chantier <input type="text" data-champ="nom" placeholder="ex. Rénovation maison Dupont"></label>
+          <label>Client <input type="text" data-champ="client"></label>
+          <label>Adresse <input type="text" data-champ="adresse"></label>
+          <label>Date <input type="date" data-champ="date"></label>
+        </div>
+
+        <div class="carte">
+          <h3>Mesures</h3>
+          <label>Résistance de terre (Ω) <input type="number" step="any" min="0" data-champ="mesures.terre"></label>
+          <p id="verdict-terre" class="verdict"></p>
+          <label>Isolement (MΩ, sous 500 V) <input type="number" step="any" min="0" data-champ="mesures.isolement"></label>
+          <p id="verdict-isolement" class="verdict"></p>
+          <label>Continuité des conducteurs de protection (Ω) <input type="number" step="any" min="0" data-champ="mesures.continuite"></label>
+          <p class="source">⚠️ Seuils à vérifier avec la norme en vigueur.</p>
+        </div>
+
+        <div class="carte">
+          <h3>Test des différentiels (bouton test)</h3>
+          <div id="chantier-differentiels"></div>
+          <button type="button" id="ajouter-differentiel" class="secondaire">+ Ajouter un différentiel</button>
+        </div>
+
+        <div class="carte">
+          <h3>Photos</h3>
+          <div id="chantier-photos" class="photos"></div>
+          <label class="bouton-photo">📷 Ajouter des photos
+            <input type="file" id="ajouter-photo" accept="image/*" capture="environment" multiple hidden>
+          </label>
+        </div>
+
+        <div class="carte">
+          <h3>Notes</h3>
+          <textarea data-champ="notes" rows="5" placeholder="Remarques, matériel à prévoir, réserves…"></textarea>
+        </div>
+
+        <button type="button" id="rapport-chantier" class="principal">🖨️ Rapport PDF</button>
+        <button type="button" id="supprimer-chantier" class="secondaire danger">Supprimer ce chantier</button>
+        <p class="source">Enregistrement automatique, sur cet appareil uniquement.</p>
+      </div>
     </section>
 
     <!-- ===== Onglet : Check-list ===== -->
@@ -132,14 +240,28 @@
     </p>
   </main>
 
+  <!-- Rapport de chantier : visible seulement à l'impression -->
+  <div id="rapport"></div>
+
   <nav>
     <button data-onglet="pieces" class="actif"><span class="ico">🏠</span><span>Pièces</span></button>
     <button data-onglet="calculs"><span class="ico">🧮</span><span>Calculs</span></button>
     <button data-onglet="fiches"><span class="ico">📚</span><span>Fiches</span></button>
+    <button data-onglet="chantiers"><span class="ico">📋</span><span>Chantiers</span></button>
     <button data-onglet="checklist"><span class="ico">✅</span><span>Check-list</span></button>
   </nav>
 
+  <!-- Données -->
   <script src="data/regles.js"></script>
-  <script src="app.js"></script>
+  <script src="data/schemas.js"></script>
+  <!-- Code (l'ordre compte : commun.js en premier, recherche.js en dernier) -->
+  <script src="js/commun.js"></script>
+  <script src="js/pieces.js"></script>
+  <script src="js/calculs.js"></script>
+  <script src="js/tableau.js"></script>
+  <script src="js/fiches.js"></script>
+  <script src="js/chantiers.js"></script>
+  <script src="js/checklist.js"></script>
+  <script src="js/recherche.js"></script>
 </body>
 </html>

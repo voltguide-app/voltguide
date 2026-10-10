@@ -19,6 +19,8 @@ window.REGLES = {
     {
       id: "sejour",
       nom: "Séjour",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🛋️",
       demandeSurface: true,
       regles: [
@@ -32,6 +34,8 @@ window.REGLES = {
     {
       id: "chambre",
       nom: "Chambre",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🛏️",
       regles: [
         "Prises 16 A : minimum 3",
@@ -42,6 +46,8 @@ window.REGLES = {
     {
       id: "cuisine",
       nom: "Cuisine",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🍳",
       demandeSurface: true,
       regles: [
@@ -57,6 +63,8 @@ window.REGLES = {
     {
       id: "sdb",
       nom: "Salle de bain",
+      source: "NF C 15-100, partie 7-701 (locaux contenant une baignoire ou une douche)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🛁",
       regles: [
         "Respecter les volumes 0, 1 et 2 (voir le schéma)",
@@ -72,12 +80,16 @@ window.REGLES = {
     {
       id: "wc",
       nom: "WC",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🚽",
       regles: ["Au moins 1 point d'éclairage, commandé"],
     },
     {
       id: "entree",
       nom: "Entrée / couloir",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🚪",
       demandeSurface: true,
       regles: [
@@ -89,6 +101,8 @@ window.REGLES = {
     {
       id: "buanderie",
       nom: "Buanderie / cellier",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🧺",
       regles: [
         "Circuit spécialisé lave-linge : 2,5 mm² / 20 A",
@@ -99,6 +113,8 @@ window.REGLES = {
     {
       id: "exterieur",
       nom: "Extérieur",
+      source: "NF C 15-100 (canalisations et matériel extérieur)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🌳",
       regles: [
         "Matériel avec indice de protection adapté (IP44 minimum pour les prises)",
@@ -124,6 +140,11 @@ window.REGLES = {
     { nom: "Chauffe-eau", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
     { nom: "Chauffage ≤ 3 500 W", section: "1,5 mm²", protection: "16 A", limite: "" },
     { nom: "Chauffage ≤ 4 500 W", section: "2,5 mm²", protection: "20 A", limite: "" },
+    { nom: "Prises de la cuisine", section: "2,5 mm²", protection: "20 A", limite: "Circuit dédié, 6 prises max" },
+    { nom: "Congélateur", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé conseillé" },
+    { nom: "VMC", section: "1,5 mm²", protection: "2 A", limite: "Circuit spécialisé" },
+    { nom: "Tableau de communication", section: "1,5 mm²", protection: "16 A", limite: "Circuit dédié" },
+    { nom: "Borne de recharge 7,4 kW", section: "10 mm²", protection: "40 A", limite: "Circuit dédié, différentiel type A ou B" },
   ],
 
   // Section minimale (mm²) pour chaque calibre de disjoncteur (cuivre)
@@ -167,6 +188,8 @@ window.REGLES = {
   fiches: [
     {
       titre: "Tableau des circuits",
+      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "📋",
       blocs: [
         {
@@ -180,6 +203,8 @@ window.REGLES = {
     },
     {
       titre: "Différentiels 30 mA",
+      source: "NF C 15-100, partie 7-771 — révision 2024 à vérifier",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🛡️",
       blocs: [
         {
@@ -209,6 +234,8 @@ window.REGLES = {
     },
     {
       titre: "Habilitations (NF C 18-510)",
+      source: "NF C 18-510",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🪪",
       blocs: [
         {
@@ -244,12 +271,14 @@ window.REGLES = {
     },
     {
       titre: "Borne de recharge (IRVE)",
+      source: "NF C 15-100, partie 7-722 et guide UTE C 15-722",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🚗",
       blocs: [
         {
           titre: "Règles principales",
           liste: [
-            "Référence : NF C 15-722",
+            "Référence : NF C 15-100 partie 7-722 et guide UTE C 15-722",
             "Circuit dédié, protégé par un différentiel 30 mA",
             "Différentiel type A minimum ; type B si la borne ne détecte pas elle-même les défauts en courant continu (6 mA DC)",
             "Prise renforcée : 2,5 mm², disjoncteur 20 A",
@@ -261,6 +290,8 @@ window.REGLES = {
     },
     {
       titre: "Photovoltaïque",
+      source: "Guide UTE C 15-712-1",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "☀️",
       blocs: [
         {
@@ -280,6 +311,8 @@ window.REGLES = {
     },
     {
       titre: "Couleurs des conducteurs",
+      source: "NF C 15-100, partie 5-51 (identification des conducteurs)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🎨",
       blocs: [
         {
@@ -302,6 +335,8 @@ window.REGLES = {
     },
     {
       titre: "Câbles R2V : liseré de couleur par section",
+      source: "Brochures Nexans (2023 et 2025) et fiches revendeurs",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "🌈",
       blocs: [
         {
@@ -340,6 +375,8 @@ window.REGLES = {
     },
     {
       titre: "Indices IP",
+      source: "NF EN 60529",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "💧",
       blocs: [
         {
@@ -374,6 +411,8 @@ window.REGLES = {
     },
     {
       titre: "Hauteurs d'installation",
+      source: "NF C 15-100, partie 7-771 et règles d'accessibilité (logements neufs)",
+      verifie: false, // passer à true quand un électricien a relu
       icone: "📏",
       blocs: [
         {
