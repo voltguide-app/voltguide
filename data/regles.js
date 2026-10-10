@@ -301,6 +301,55 @@ window.REGLES = {
       ],
     },
     {
+      titre: "Câbles R2V : liseré de couleur par section",
+      icone: "🌈",
+      blocs: [
+        {
+          liste: [
+            "La gaine d'un câble U-1000 R2V est noire. Certains fabricants y ajoutent un liseré (bande) de couleur qui indique la section",
+            "⚠️ Ce code est propre à chaque fabricant : ce n'est pas une règle de la norme. La section est toujours écrite sur la gaine (ex. « 3G1,5 »)",
+          ],
+        },
+        {
+          titre: "Nexans DISTINGO NX'TAG",
+          tableau: {
+            entetes: ["Section", "Liseré"],
+            lignes: [
+              ["1,5 mm²", "🔴 Rose / rouge"],
+              ["2,5 mm²", "🟡 Jaune"],
+            ],
+          },
+        },
+        {
+          titre: "Prysmian IrisTech",
+          tableau: {
+            entetes: ["Section", "Liseré"],
+            lignes: [
+              ["1,5 mm²", "🟣 Rose magenta"],
+              ["2,5 mm²", "🟤 Beige"],
+              ["4 mm²", "🟣 Violet"],
+              ["6 mm²", "🔵 Turquoise"],
+              ["10 mm²", "🟤 Marron"],
+              ["16 mm²", "🔘 Gris"],
+              ["25 mm²", "⚪ Blanc"],
+            ],
+          },
+        },
+        {
+          titre: "Couleur des conducteurs à l'intérieur",
+          tableau: {
+            entetes: ["Câble", "Conducteurs"],
+            lignes: [
+              ["3G", "Bleu, marron, vert/jaune"],
+              ["4G", "Marron, noir, gris, vert/jaune"],
+              ["5G", "Bleu, marron, noir, gris, vert/jaune"],
+              ["G / X", "G = avec vert/jaune · X = sans vert/jaune"],
+            ],
+          },
+        },
+      ],
+    },
+    {
       titre: "Couleurs et sections (cosses, embouts)",
       icone: "🔩",
       blocs: [
