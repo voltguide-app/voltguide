@@ -3,64 +3,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5b300">
+  <meta name="theme-color" content="#1b1d21">
   <title>VoltGuide</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>⚡ VoltGuide</h1>
-    <p class="sous-titre">L'assistant de l'électricien, conforme NF C 15-100</p>
+    <div class="logo">⚡</div>
+    <div>
+      <h1>VoltGuide</h1>
+      <p class="sous-titre">L'assistant de l'électricien · NF C 15-100</p>
+    </div>
   </header>
 
   <main>
     <!-- ===== Onglet : Pièces ===== -->
     <section id="pieces" class="onglet actif">
       <h2>Guide pièce par pièce</h2>
+      <p class="intro">Touche une pièce pour voir le minimum obligatoire.</p>
       <div id="liste-pieces" class="grille"></div>
       <div id="detail-piece"></div>
     </section>
 
     <!-- ===== Onglet : Calculs ===== -->
     <section id="calculs" class="onglet">
-      <h2>Section de câble et chute de tension</h2>
-      <form id="form-calcul" class="carte">
-        <label>Puissance de l'appareil (W)
-          <input type="number" id="c-puissance" value="3000" min="1" required>
-        </label>
-        <label>Longueur du câble (m)
-          <input type="number" id="c-longueur" value="20" min="1" required>
-        </label>
-        <label>Alimentation
-          <select id="c-reseau">
-            <option value="mono">Monophasé 230 V</option>
-            <option value="tri">Triphasé 400 V</option>
-          </select>
-        </label>
-        <label>Type de circuit
-          <select id="c-type">
-            <option value="3">Éclairage (chute max 3 %)</option>
-            <option value="5" selected>Autres usages (chute max 5 %)</option>
-          </select>
-        </label>
-        <button type="submit">Calculer</button>
-      </form>
-      <div id="resultat-calcul"></div>
-
-      <h2>Tableau des circuits</h2>
-      <div class="tableau-scroll">
-        <table id="table-circuits">
-          <thead><tr><th>Circuit</th><th>Section</th><th>Protection</th><th>Limite</th></tr></thead>
-          <tbody></tbody>
-        </table>
+      <h2>Calculateurs</h2>
+      <div class="pastilles" id="choix-calcul">
+        <button data-calcul="calc-section" class="actif">Section de câble</button>
+        <button data-calcul="calc-differentiels">Différentiels</button>
+        <button data-calcul="calc-bilan">Bilan de puissance</button>
+        <button data-calcul="calc-ohm">Loi d'Ohm</button>
       </div>
+
+      <!-- Section de câble -->
+      <div id="calc-section" class="sous-calcul actif">
+        <form id="form-section" class="carte">
+          <label>Puissance de l'appareil (W)
+            <input type="number" id="c-puissance" value="3000" min="1" required>
+          </label>
+          <label>Longueur du câble (m)
+            <input type="number" id="c-longueur" value="20" min="1" required>
+          </label>
+          <label>Alimentation
+            <select id="c-reseau">
+              <option value="mono">Monophasé 230 V</option>
+              <option value="tri">Triphasé 400 V</option>
+            </select>
+          </label>
+          <label>Type de circuit
+            <select id="c-type">
+              <option value="3">Éclairage (chute max 3 %)</option>
+              <option value="5" selected>Autres usages (chute max 5 %)</option>
+            </select>
+          </label>
+          <button type="submit">Calculer</button>
+        </form>
+        <div id="resultat-section"></div>
+      </div>
+
+      <!-- Différentiels -->
+      <div id="calc-differentiels" class="sous-calcul">
+        <form id="form-differentiels" class="carte">
+          <label>Surface du logement (m²)
+            <input type="number" id="d-surface" value="80" min="1" required>
+          </label>
+          <label>Nombre de circuits dans le tableau
+            <input type="number" id="d-circuits" value="14" min="1" required>
+          </label>
+          <button type="submit">Calculer</button>
+        </form>
+        <div id="resultat-differentiels"></div>
+      </div>
+
+      <!-- Bilan de puissance -->
+      <div id="calc-bilan" class="sous-calcul">
+        <div class="carte">
+          <p class="intro">Coche les appareils et ajuste les puissances si besoin.</p>
+          <div id="liste-appareils"></div>
+          <label>Chauffage électrique et autres (W)
+            <input type="number" id="b-autres" value="0" min="0">
+          </label>
+          <label>Coefficient de simultanéité : <strong id="b-coef-valeur">0,7</strong>
+            <input type="range" id="b-coef" min="0.5" max="1" step="0.05" value="0.7">
+            <small>Tous les appareils ne fonctionnent pas en même temps.</small>
+          </label>
+        </div>
+        <div id="resultat-bilan"></div>
+      </div>
+
+      <!-- Loi d'Ohm -->
+      <div id="calc-ohm" class="sous-calcul">
+        <form id="form-ohm" class="carte">
+          <p class="intro">Remplis 2 valeurs, l'app calcule les 2 autres.</p>
+          <div class="deux-colonnes">
+            <label>Tension U (V) <input type="number" id="o-u" step="any" min="0"></label>
+            <label>Intensité I (A) <input type="number" id="o-i" step="any" min="0"></label>
+            <label>Résistance R (Ω) <input type="number" id="o-r" step="any" min="0"></label>
+            <label>Puissance P (W) <input type="number" id="o-p" step="any" min="0"></label>
+          </div>
+          <button type="submit">Calculer</button>
+          <button type="button" id="o-effacer" class="secondaire">Effacer</button>
+        </form>
+        <div id="resultat-ohm"></div>
+      </div>
+    </section>
+
+    <!-- ===== Onglet : Fiches ===== -->
+    <section id="fiches" class="onglet">
+      <h2>Fiches techniques</h2>
+      <div id="liste-fiches"></div>
     </section>
 
     <!-- ===== Onglet : Check-list ===== -->
     <section id="checklist" class="onglet">
       <h2>Autocontrôle avant le Consuel</h2>
-      <p id="progression" class="progression"></p>
+      <div class="carte">
+        <p id="progression" class="progression"></p>
+        <div class="barre"><div id="barre-remplie"></div></div>
+      </div>
       <div id="liste-checklist"></div>
       <button id="reset-checklist" class="secondaire">Tout décocher</button>
     </section>
@@ -72,9 +133,10 @@
   </main>
 
   <nav>
-    <button data-onglet="pieces" class="actif">🏠<span>Pièces</span></button>
-    <button data-onglet="calculs">🧮<span>Calculs</span></button>
-    <button data-onglet="checklist">✅<span>Check-list</span></button>
+    <button data-onglet="pieces" class="actif"><span class="ico">🏠</span><span>Pièces</span></button>
+    <button data-onglet="calculs"><span class="ico">🧮</span><span>Calculs</span></button>
+    <button data-onglet="fiches"><span class="ico">📚</span><span>Fiches</span></button>
+    <button data-onglet="checklist"><span class="ico">✅</span><span>Check-list</span></button>
   </nav>
 
   <script src="data/regles.js"></script>

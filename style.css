@@ -1,24 +1,29 @@
 /* ===== Couleurs (mode clair et mode sombre automatique) ===== */
 :root {
-  --fond: #f6f6f3;
+  --fond: #eef0f3;
   --carte: #ffffff;
-  --texte: #1d1d1b;
-  --discret: #6b6b66;
-  --bordure: #e2e2dc;
-  --accent: #f5b300;
-  --accent-texte: #1d1d1b;
+  --texte: #1b1d21;
+  --discret: #646a73;
+  --bordure: #dde1e6;
+  --accent: #ffc400;          /* jaune électrique */
+  --accent-doux: #fff4cc;
+  --sombre: #1b1d21;          /* en-tête et barre du bas */
   --ok: #1f8a4c;
-  --erreur: #c0392b;
+  --erreur: #c62828;
+  --ombre: 0 1px 3px rgba(0, 0, 0, .08);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --fond: #141412;
-    --carte: #1f1f1c;
-    --texte: #f1f1ec;
-    --discret: #a3a39c;
-    --bordure: #33332e;
+    --fond: #111315;
+    --carte: #1c1f23;
+    --texte: #eef0f3;
+    --discret: #9aa1ab;
+    --bordure: #2c3036;
+    --accent-doux: #3a3210;
+    --sombre: #0b0c0e;
     --ok: #4cc27f;
     --erreur: #ff6b5b;
+    --ombre: none;
   }
 }
 
@@ -30,105 +35,171 @@ body {
   background: var(--fond);
   color: var(--texte);
   line-height: 1.5;
-  padding-bottom: 80px; /* place pour la barre du bas */
+  padding-bottom: 90px; /* place pour la barre du bas */
 }
 
+/* ===== En-tête ===== */
 header {
-  background: var(--accent);
-  color: var(--accent-texte);
-  padding: 16px;
+  background: var(--sombre);
+  color: #fff;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 10;
 }
-header h1 { margin: 0; font-size: 1.5rem; }
-.sous-titre { margin: 0; font-size: 0.9rem; }
+.logo {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--accent);
+  display: grid; place-items: center;
+  font-size: 1.5rem;
+}
+header h1 { margin: 0; font-size: 1.3rem; letter-spacing: .5px; }
+.sous-titre { margin: 0; font-size: .8rem; color: #b8bec7; }
 
-main { max-width: 720px; margin: 0 auto; padding: 16px; }
-h2 { font-size: 1.15rem; margin: 24px 0 12px; }
+main { max-width: 720px; margin: 0 auto; padding: 8px 16px; }
+h2 { font-size: 1.2rem; margin: 20px 0 8px; }
+.carte h2 { margin-top: 0; }
+.intro { color: var(--discret); margin: 0 0 12px; font-size: .95rem; }
 
 /* ===== Onglets ===== */
-.onglet { display: none; }
-.onglet.actif { display: block; }
+.onglet, .sous-calcul { display: none; }
+.onglet.actif, .sous-calcul.actif { display: block; }
 
 nav {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex;
-  background: var(--carte);
-  border-top: 1px solid var(--bordure);
+  background: var(--sombre);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 nav button {
   flex: 1;
   background: none; border: none;
   padding: 10px 0 12px;
-  font-size: 1.3rem;
-  color: var(--discret);
-  display: flex; flex-direction: column; align-items: center;
+  color: #8d949e;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: .75rem;
   cursor: pointer;
+  border-top: 3px solid transparent;
 }
-nav button span { font-size: 0.75rem; }
-nav button.actif { color: var(--texte); font-weight: 600; }
+nav button .ico { font-size: 1.4rem; filter: grayscale(1); opacity: .7; }
+nav button.actif { color: #fff; font-weight: 600; border-top-color: var(--accent); }
+nav button.actif .ico { filter: none; opacity: 1; }
 
-/* ===== Éléments communs ===== */
+/* ===== Cartes ===== */
 .carte {
   background: var(--carte);
   border: 1px solid var(--bordure);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 16px;
   margin-bottom: 12px;
+  box-shadow: var(--ombre);
 }
+
+/* ===== Grille des pièces ===== */
 .grille {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
 }
 .bouton-piece {
   background: var(--carte);
-  border: 1px solid var(--bordure);
-  border-radius: 12px;
-  padding: 14px 8px;
-  font-size: 0.95rem;
+  border: 2px solid var(--bordure);
+  border-radius: 14px;
+  padding: 14px 6px;
+  font-size: .9rem; font-weight: 500;
   color: var(--texte);
   cursor: pointer;
+  box-shadow: var(--ombre);
 }
-.bouton-piece .emoji { display: block; font-size: 1.8rem; }
-.bouton-piece.actif { border: 2px solid var(--accent); }
+.bouton-piece .emoji { display: block; font-size: 2rem; margin-bottom: 4px; }
+.bouton-piece.actif { border-color: var(--accent); background: var(--accent-doux); }
 
-label { display: block; margin-bottom: 12px; font-size: 0.9rem; color: var(--discret); }
-input, select {
-  display: block; width: 100%;
-  margin-top: 4px; padding: 10px;
-  font-size: 1rem;
-  border: 1px solid var(--bordure);
-  border-radius: 8px;
-  background: var(--fond); color: var(--texte);
-}
-button[type="submit"], .secondaire {
-  width: 100%; padding: 12px;
-  font-size: 1rem; font-weight: 600;
-  border-radius: 8px; border: none;
-  background: var(--accent); color: var(--accent-texte);
+/* ===== Pastilles de choix (calculateurs) ===== */
+.pastilles { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; }
+.pastilles button {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--bordure);
+  background: var(--carte);
+  color: var(--texte);
+  font-size: .9rem; font-weight: 500;
   cursor: pointer;
 }
-.secondaire { background: var(--bordure); color: var(--texte); margin-top: 8px; }
+.pastilles button.actif { background: var(--accent); border-color: var(--accent); color: #1b1d21; font-weight: 700; }
+
+/* ===== Formulaires ===== */
+label { display: block; margin-bottom: 14px; font-size: .9rem; color: var(--discret); }
+label small { display: block; margin-top: 2px; }
+input[type="number"], select {
+  display: block; width: 100%;
+  margin-top: 4px; padding: 12px;
+  font-size: 1.05rem;
+  border: 2px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--fond); color: var(--texte);
+}
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 8px; }
+.deux-colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+
+button[type="submit"], .secondaire {
+  width: 100%; padding: 14px;
+  font-size: 1.05rem; font-weight: 700;
+  border-radius: 10px; border: none;
+  background: var(--accent); color: #1b1d21;
+  cursor: pointer;
+}
+.secondaire { background: var(--bordure); color: var(--texte); margin-top: 8px; font-weight: 600; }
+
+/* ===== Résultats ===== */
+.resultat { border-left: 5px solid var(--accent); }
+.resultat p { margin: 6px 0; }
+.chiffre { font-size: 1.7rem; font-weight: 800; }
+.ok { color: var(--ok); }
+.erreur { color: var(--erreur); }
+.info { background: var(--accent-doux); border-radius: 8px; padding: 8px 10px; font-size: .9rem; }
 
 ul.regles { padding-left: 20px; margin: 8px 0 0; }
 ul.regles li { margin-bottom: 6px; }
 
-.chiffre { font-size: 1.6rem; font-weight: 700; }
-.ok { color: var(--ok); }
-.erreur { color: var(--erreur); }
+/* ===== Bilan de puissance ===== */
+.appareil { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--bordure); margin: 0; color: var(--texte); }
+.appareil input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); flex-shrink: 0; }
+.appareil span { flex: 1; }
+.appareil input[type="number"] { width: 90px; margin: 0; padding: 6px 8px; font-size: .95rem; }
 
-/* ===== Tableau ===== */
+/* ===== Fiches (accordéon) ===== */
+details.carte { padding: 0; }
+details summary {
+  padding: 16px;
+  font-weight: 600; font-size: 1.05rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex; align-items: center; gap: 10px;
+}
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "›"; margin-left: auto; font-size: 1.5rem; color: var(--discret); transition: transform .2s; }
+details[open] summary::after { transform: rotate(90deg); }
+details .contenu { padding: 0 16px 16px; }
+details h3 { font-size: .95rem; margin: 12px 0 6px; color: var(--discret); }
+
+/* ===== Tableaux ===== */
 .tableau-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; background: var(--carte); font-size: 0.9rem; }
-th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--bordure); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; }
 th { color: var(--discret); font-weight: 600; }
+td:first-child { font-weight: 600; }
 
 /* ===== Check-list ===== */
-.point { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; color: var(--texte); margin: 0; font-size: 0.95rem; }
-.point input { width: 22px; height: 22px; margin: 2px 0 0; flex-shrink: 0; }
-.progression { font-weight: 600; }
+.point { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; color: var(--texte); margin: 0; font-size: .95rem; border-bottom: 1px solid var(--bordure); }
+.point:last-child { border-bottom: none; }
+.point input { width: 24px; height: 24px; margin: 0; flex-shrink: 0; accent-color: var(--ok); }
+.progression { font-weight: 700; margin: 0 0 8px; }
+.barre { height: 10px; background: var(--bordure); border-radius: 999px; overflow: hidden; }
+#barre-remplie { height: 100%; width: 0; background: var(--ok); transition: width .3s; }
 
 /* ===== Schéma salle de bain ===== */
 .schema svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 12px auto 0; }
 .schema text { fill: var(--texte); font-size: 13px; }
 
-.avertissement { font-size: 0.8rem; color: var(--discret); text-align: center; margin-top: 32px; }
+.avertissement { font-size: .8rem; color: var(--discret); text-align: center; margin-top: 32px; }
