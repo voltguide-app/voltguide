@@ -311,27 +311,16 @@ window.REGLES = {
           ],
         },
         {
-          titre: "Nexans DISTINGO NX'TAG",
+          titre: "Nexans DISTINGO et DISTINGO NX'TAG",
           tableau: {
             entetes: ["Section", "Liseré"],
             lignes: [
               ["1,5 mm²", "🔴 Rose / rouge"],
               ["2,5 mm²", "🟡 Jaune"],
-            ],
-          },
-        },
-        {
-          titre: "Prysmian IrisTech",
-          tableau: {
-            entetes: ["Section", "Liseré"],
-            lignes: [
-              ["1,5 mm²", "🟣 Rose magenta"],
-              ["2,5 mm²", "🟤 Beige"],
-              ["4 mm²", "🟣 Violet"],
-              ["6 mm²", "🔵 Turquoise"],
+              ["4 mm²", "🟣 Violet (à confirmer)"],
+              ["6 mm²", "🔵 Bleu"],
               ["10 mm²", "🟤 Marron"],
               ["16 mm²", "🔘 Gris"],
-              ["25 mm²", "⚪ Blanc"],
             ],
           },
         },
