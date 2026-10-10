@@ -37,6 +37,7 @@
       <h2>Calculateurs</h2>
       <div class="pastilles" id="choix-calcul">
         <button data-calcul="calc-tableau" class="actif">⭐ Tableau électrique</button>
+        <button data-calcul="calc-lux">💡 Éclairage (lux)</button>
         <button data-calcul="calc-section">Section de câble</button>
         <button data-calcul="calc-differentiels">Différentiels</button>
         <button data-calcul="calc-bilan">Bilan de puissance</button>
@@ -85,6 +86,51 @@
           <button type="submit">Générer le tableau</button>
         </form>
         <div id="resultat-tableau"></div>
+      </div>
+
+      <!-- Éclairage (lux) -->
+      <div id="calc-lux" class="sous-calcul">
+        <form id="form-lux" class="carte">
+          <p class="intro">Calcule le nombre de luminaires pour éclairer une pièce ou un local.</p>
+          <div class="deux-colonnes">
+            <label>Type de local
+              <select id="l-type">
+                <option value="logement">Logement</option>
+                <option value="pro">Local professionnel</option>
+              </select>
+            </label>
+            <label>Éclairement visé (lux) <input type="number" id="l-lux" min="1" required></label>
+          </div>
+          <label>Pièce / activité <select id="l-activite"></select></label>
+          <h3>Dimensions</h3>
+          <div class="deux-colonnes">
+            <label>Longueur (m) <input type="number" id="l-longueur" value="6" min="0.5" step="0.1" required></label>
+            <label>Largeur (m) <input type="number" id="l-largeur" value="4" min="0.5" step="0.1" required></label>
+            <label>Hauteur des luminaires (m) <input type="number" id="l-hauteur" value="2.5" min="1" step="0.05" required></label>
+            <label>Hauteur du plan de travail (m) <input type="number" id="l-plan" value="0.85" min="0" step="0.05" required></label>
+          </div>
+          <h3>Local et luminaires</h3>
+          <div class="deux-colonnes">
+            <label>Murs et plafond
+              <select id="l-parois">
+                <option value="claires">Clairs (blanc)</option>
+                <option value="moyennes">Moyens</option>
+                <option value="sombres">Sombres</option>
+              </select>
+            </label>
+            <label>Propreté du local
+              <select id="l-maintenance">
+                <option value="0.8">Propre (bureau)</option>
+                <option value="0.7">Normal</option>
+                <option value="0.6">Sale (atelier)</option>
+              </select>
+            </label>
+            <label>Flux d'un luminaire (lm) <input type="number" id="l-flux" min="1" required></label>
+            <label>Puissance d'un luminaire (W) <input type="number" id="l-puissance" min="0" required></label>
+          </div>
+          <button type="submit">Calculer</button>
+        </form>
+        <div id="resultat-lux"></div>
       </div>
 
       <!-- Section de câble -->
@@ -259,6 +305,7 @@
   <script src="js/pieces.js"></script>
   <script src="js/calculs.js"></script>
   <script src="js/tableau.js"></script>
+  <script src="js/eclairage.js"></script>
   <script src="js/fiches.js"></script>
   <script src="js/chantiers.js"></script>
   <script src="js/checklist.js"></script>

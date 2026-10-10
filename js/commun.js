@@ -30,6 +30,19 @@ function ecrireMemoire(cle, valeur) {
   try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch {}
 }
 
+// Lignes d'un tableau de fiche : écrites directement, ou construites à partir des données
+function lignesTableau(tableau) {
+  const E = R.eclairement;
+  const marque = (x) => (x.verifie ? "" : " (à vérifier)");
+  switch (tableau.depuis) {
+    case "circuits": return R.circuits.map((c) => [c.nom, c.section, c.protection, c.limite]);
+    case "eclairement-code": return E.codeDuTravail;
+    case "eclairement-pro": return E.pro.map((x) => [x.nom, `${x.lux} lux${marque(x)}`]);
+    case "eclairement-logement": return E.logement.map((x) => [x.nom, `${x.lux} lux${x.note ? " · " + x.note : ""}`]);
+    default: return tableau.lignes;
+  }
+}
+
 // Ligne « Source » affichée sous chaque fiche, pièce ou schéma
 function sourceHTML(element) {
   if (!element.source) return "";

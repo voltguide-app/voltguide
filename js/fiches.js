@@ -3,11 +3,7 @@
 // =====================================================================
 
 function tableauHTML(tableau) {
-  // Le tableau des circuits est construit à partir de R.circuits
-  const lignes = tableau.depuis === "circuits"
-    ? R.circuits.map((c) => [c.nom, c.section, c.protection, c.limite])
-    : tableau.lignes;
-
+  const lignes = lignesTableau(tableau);
   return `<div class="tableau-scroll"><table>
     <thead><tr>${tableau.entetes.map((t) => `<th>${t}</th>`).join("")}</tr></thead>
     <tbody>${lignes.map((l) => `<tr>${l.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>

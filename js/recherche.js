@@ -21,12 +21,7 @@ R.fiches.forEach((f) => {
   f.blocs.forEach((b) => {
     if (b.titre) lignes.push(b.titre);
     if (b.liste) lignes.push(...b.liste);
-    if (b.tableau) {
-      const rangs = b.tableau.depuis === "circuits"
-        ? R.circuits.map((c) => [c.nom, c.section, c.protection, c.limite])
-        : b.tableau.lignes;
-      rangs.forEach((r) => lignes.push(r.filter(Boolean).join(" · ")));
-    }
+    if (b.tableau) lignesTableau(b.tableau).forEach((r) => lignes.push(r.filter(Boolean).join(" · ")));
   });
   INDEX.push({ icone: f.icone, titre: f.titre, lignes, ouvrir: () => ouvrirFiche("fiche:" + f.id) });
 });
@@ -37,6 +32,7 @@ S.forEach((s) => INDEX.push({
 
 [
   ["calc-tableau", "Générateur de tableau électrique", ["coffret tableau circuits répartition différentiels matériel liste"]],
+  ["calc-lux", "Calcul d'éclairage (lux)", ["lux éclairement luminaires lumens éclairage bureau atelier pièce"]],
   ["calc-section", "Calcul de section de câble", ["section câble chute de tension longueur disjoncteur calibre"]],
   ["calc-differentiels", "Calcul des différentiels", ["interrupteur différentiel 30 mA type A AC nombre surface"]],
   ["calc-bilan", "Bilan de puissance", ["abonnement kVA puissance compteur appareils"]],

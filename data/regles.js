@@ -182,6 +182,55 @@ window.REGLES = {
   abonnements: [3, 6, 9, 12, 15, 18, 24, 30, 36], // puissances souscrites (kVA)
 
   // ---------------------------------------------------------------
+  //  Éclairement (lux)
+  //  lux = éclairement moyen à maintenir sur le plan de travail
+  //  minimum = valeur minimale imposée par le Code du travail (R4223-4)
+  // ---------------------------------------------------------------
+  eclairement: {
+    // Logement : aucune norme, ce sont des recommandations courantes
+    logement: [
+      { nom: "Séjour", lux: 200 },
+      { nom: "Cuisine", lux: 300, note: "500 lux conseillés sur le plan de travail" },
+      { nom: "Chambre", lux: 150 },
+      { nom: "Salle de bain", lux: 200, note: "500 lux conseillés au miroir" },
+      { nom: "Entrée / couloir", lux: 100 },
+      { nom: "WC", lux: 100 },
+      { nom: "Bureau à domicile", lux: 500 },
+      { nom: "Garage / atelier", lux: 300 },
+    ],
+    // Locaux de travail : NF EN 12464-1 (2021) + minimum du Code du travail
+    pro: [
+      { nom: "Bureau : écriture, lecture, informatique", lux: 500, minimum: 120, ref: "34.2", verifie: true },
+      { nom: "Salle de réunion", lux: 500, minimum: 120, ref: "34.5.1", verifie: true },
+      { nom: "Dessin industriel", lux: 750, minimum: 120, ref: "34.3", verifie: true },
+      { nom: "Accueil / réception", lux: 300, minimum: 120, ref: "34.6", verifie: true },
+      { nom: "Classement, photocopie", lux: 300, minimum: 120, ref: "34.1", verifie: true },
+      { nom: "Archives", lux: 200, minimum: 120, ref: "34.7", verifie: true },
+      { nom: "Circulation, couloir", lux: 100, minimum: 40 },
+      { nom: "Escaliers", lux: 150, minimum: 60 },
+      { nom: "Sanitaires, vestiaires", lux: 200, minimum: 120 },
+      { nom: "Salle de pause", lux: 200, minimum: 120 },
+      { nom: "Entrepôt, stockage", lux: 100, minimum: 60 },
+      { nom: "Atelier : travail grossier", lux: 300, minimum: 120 },
+      { nom: "Atelier : travail fin, montage", lux: 500, minimum: 120 },
+      { nom: "Commerce : zone de vente", lux: 300, minimum: 120 },
+      { nom: "Commerce : caisse", lux: 500, minimum: 120 },
+      { nom: "Salle de classe", lux: 300, minimum: 120 },
+      { nom: "Cuisine professionnelle", lux: 500, minimum: 120 },
+      { nom: "Parking intérieur", lux: 75, minimum: 40 },
+    ],
+    // Code du travail, article R4223-4 : valeurs minimales
+    codeDuTravail: [
+      ["Voies de circulation intérieures", "40 lux"],
+      ["Escaliers et entrepôts", "60 lux"],
+      ["Locaux de travail, vestiaires, sanitaires", "120 lux"],
+      ["Locaux aveugles affectés à un travail permanent", "200 lux"],
+      ["Zones et voies de circulation extérieures", "10 lux"],
+      ["Espaces extérieurs avec travaux permanents", "40 lux"],
+    ],
+  },
+
+  // ---------------------------------------------------------------
   //  Fiches techniques (onglet « Fiches »)
   //  Chaque fiche contient des blocs : soit une liste, soit un tableau.
   // ---------------------------------------------------------------
@@ -370,6 +419,33 @@ window.REGLES = {
               ["G / X", "G = avec vert/jaune · X = sans vert/jaune"],
             ],
           },
+        },
+      ],
+    },
+    {
+      titre: "Éclairement (lux)",
+      source: "Code du travail R4223-4 ; NF EN 12464-1 (2021), valeurs bureaux citées par l'INRS (déc. 2025)",
+      verifie: false, // valeurs bureaux et Code du travail vérifiées, les autres non
+      icone: "💡",
+      blocs: [
+        {
+          titre: "Minimums obligatoires (Code du travail, R4223-4)",
+          tableau: { entetes: ["Local", "Minimum"], depuis: "eclairement-code" },
+        },
+        {
+          titre: "Valeurs recommandées en locaux de travail (NF EN 12464-1)",
+          tableau: { entetes: ["Activité", "Éclairement"], depuis: "eclairement-pro" },
+        },
+        {
+          titre: "Logement (recommandations, pas de norme)",
+          tableau: { entetes: ["Pièce", "Éclairement"], depuis: "eclairement-logement" },
+        },
+        {
+          liste: [
+            "Ce sont des éclairements moyens à maintenir : ils doivent être atteints même quand les luminaires vieillissent et s'encrassent",
+            "Mesure au luxmètre sur le plan de travail (environ 0,85 m) ou au sol pour les circulations",
+            "La norme NF EN 12464-1 fixe aussi l'uniformité, l'éblouissement (UGR) et le rendu des couleurs (Ra)",
+          ],
         },
       ],
     },
