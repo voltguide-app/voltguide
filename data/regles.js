@@ -292,6 +292,55 @@ window.REGLES = {
             ],
           },
         },
+        {
+          liste: [
+            "⚠️ La couleur d'un fil indique sa fonction (phase, neutre, terre), PAS sa section",
+            "Un fil rouge peut être du 1,5 mm², du 2,5 mm² ou plus : la section est écrite sur la gaine ou la bobine",
+          ],
+        },
+      ],
+    },
+    {
+      titre: "Couleurs et sections (cosses, embouts)",
+      icone: "🔩",
+      blocs: [
+        {
+          titre: "Cosses pré-isolées (code le plus courant)",
+          tableau: {
+            entetes: ["Couleur", "Section du fil"],
+            lignes: [
+              ["🔴 Rouge", "0,5 à 1,5 mm²"],
+              ["🔵 Bleu", "1,5 à 2,5 mm²"],
+              ["🟡 Jaune", "4 à 6 mm²"],
+            ],
+          },
+        },
+        {
+          titre: "Embouts de câblage isolés (code DIN 46228)",
+          tableau: {
+            entetes: ["Section", "Couleur"],
+            lignes: [
+              ["0,5 mm²", "⚪ Blanc"],
+              ["0,75 mm²", "🔘 Gris"],
+              ["1 mm²", "🔴 Rouge"],
+              ["1,5 mm²", "⚫ Noir"],
+              ["2,5 mm²", "🔵 Bleu"],
+              ["4 mm²", "🔘 Gris"],
+              ["6 mm²", "🟡 Jaune"],
+              ["10 mm²", "🔴 Rouge"],
+              ["16 mm²", "🔵 Bleu"],
+              ["25 mm²", "🟡 Jaune"],
+            ],
+          },
+        },
+        {
+          titre: "Attention",
+          liste: [
+            "Ces codes couleur viennent des fabricants, pas de la NF C 15-100",
+            "Il existe aussi un code couleur « français » pour les embouts, différent du code DIN",
+            "Les plages varient selon les marques : vérifie toujours la section écrite sur la boîte",
+          ],
+        },
       ],
     },
     {
