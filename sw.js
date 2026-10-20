@@ -1,12 +1,12 @@
 // Service worker : garde une copie de l'application pour l'utiliser sans réseau.
 // Changer le numéro de version force le téléphone à télécharger la nouvelle version.
-const VERSION = "voltguide-v5";
+const VERSION = "voltguide-v6";
 const FICHIERS = [
   "./", "index.html", "style.css", "manifest.json",
   "icones/icone-192.png", "icones/icone-512.png", "icones/icone-apple.png",
-  "data/regles.js", "data/schemas.js",
+  "data/regles.js", "data/schemas.js", "data/config.js",
   "js/commun.js", "js/pieces.js", "js/calculs.js", "js/tableau.js", "js/eclairage.js",
-  "js/fiches.js", "js/chantiers.js", "js/checklist.js", "js/recherche.js",
+  "js/fiches.js", "js/chantiers.js", "js/checklist.js", "js/avis.js", "js/recherche.js",
 ];
 
 self.addEventListener("install", (e) => {

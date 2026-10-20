@@ -117,6 +117,9 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   await attendre(300);
   verifier(d.getElementById("liste-chantiers").textContent.includes("Aucun chantier"), "2e appui : chantier supprimé");
 
+  // Bouton avis : caché tant que le lien n'est pas réglé
+  verifier(d.getElementById("bloc-avis").hidden === !w.VOLTGUIDE_CONFIG.lienAvis, "Bouton « Donner mon avis » " + (w.VOLTGUIDE_CONFIG.lienAvis ? "visible" : "caché (pas encore de lien)"));
+
   // Check-list
   clic(d.querySelector('nav button[data-onglet="checklist"]'));
   verifier(d.querySelectorAll(".point").length > 15, "Check-list affichée");

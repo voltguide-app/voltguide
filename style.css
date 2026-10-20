@@ -327,6 +327,12 @@ td:first-child { font-weight: 600; }
 .barre { height: 10px; background: var(--bordure); border-radius: 999px; overflow: hidden; }
 #barre-remplie { height: 100%; width: 0; background: var(--ok); transition: width .3s; }
 
+/* ===== Bloc « Donner mon avis » ===== */
+.avis { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 32px; border: 2px solid var(--accent); }
+.avis > div { flex: 1 1 240px; min-width: 0; }
+.avis p { margin: 4px 0 0; color: var(--discret); font-size: .9rem; }
+.avis a.principal { display: block; flex: 1 1 180px; text-align: center; text-decoration: none; margin: 0; }
+
 .avertissement { font-size: .8rem; color: var(--discret); text-align: center; margin-top: 32px; }
 
 /* ===== Petits écrans ===== */

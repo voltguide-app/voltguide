@@ -286,6 +286,14 @@
       <button id="reset-checklist" class="secondaire">Tout décocher</button>
     </section>
 
+    <div id="bloc-avis" class="carte avis" hidden>
+      <div>
+        <strong>Tu testes VoltGuide ?</strong>
+        <p>Dis-moi ce qui te sert, ce qui manque ou ce qui est faux. Ça prend 2 minutes.</p>
+      </div>
+      <a class="principal" href="#" target="_blank" rel="noopener">💬 Donner mon avis</a>
+    </div>
+
     <p class="avertissement">
       ⚠️ VoltGuide est une aide. Elle ne remplace pas la norme NF C 15-100 officielle.
       <br>Données version <span id="version"></span>, mises à jour le <span id="maj"></span>.
@@ -306,6 +314,7 @@
   <!-- Données -->
   <script src="data/regles.js"></script>
   <script src="data/schemas.js"></script>
+  <script src="data/config.js"></script>
   <!-- Code (l'ordre compte : commun.js en premier, recherche.js en dernier) -->
   <script src="js/commun.js"></script>
   <script src="js/pieces.js"></script>
@@ -315,6 +324,7 @@
   <script src="js/fiches.js"></script>
   <script src="js/chantiers.js"></script>
   <script src="js/checklist.js"></script>
+  <script src="js/avis.js"></script>
   <script src="js/recherche.js"></script>
 </body>
 </html>
