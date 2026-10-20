@@ -3,8 +3,13 @@
   "short_name": "VoltGuide",
   "description": "L'assistant de l'électricien, conforme NF C 15-100",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f6f3",
+  "background_color": "#1b1d21",
   "theme_color": "#1b1d21",
-  "lang": "fr"
+  "lang": "fr",
+  "icons": [
+    { "src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
 }
