@@ -1,6 +1,6 @@
 // Service worker : garde une copie de l'application pour l'utiliser sans réseau.
 // Changer le numéro de version force le téléphone à télécharger la nouvelle version.
-const VERSION = "voltguide-v7";
+const VERSION = "voltguide-v8";
 const FICHIERS = [
   "./", "index.html", "style.css", "manifest.json",
   "icones/icone-192.png", "icones/icone-512.png", "icones/icone-apple.png",
@@ -19,10 +19,12 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-// Réseau d'abord (pour avoir les règles à jour), sinon la copie hors-ligne
+// Réseau d'abord (pour avoir les règles à jour), sinon la copie hors-ligne.
+// « no-cache » oblige le navigateur à vérifier auprès du site s'il y a une nouvelle version.
 self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: "no-cache" })
       .then((reponse) => {
         const copie = reponse.clone();
         caches.open(VERSION).then((cache) => cache.put(e.request, copie));
