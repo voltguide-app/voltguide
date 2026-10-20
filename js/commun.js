@@ -13,10 +13,10 @@ const fr = (n, dec = 1) => n.toLocaleString("fr-FR", { maximumFractionDigits: de
 
 // Transforme un titre en identifiant : "Indices IP" → "indices-ip"
 const slug = (texte) =>
-  texte.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  texte.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 // Texte sans accents ni majuscules, pour la recherche
-const normaliser = (texte) => texte.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const normaliser = (texte) => texte.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 // Évite que du texte saisi par l'utilisateur soit interprété comme du HTML
 const echapper = (texte) =>
@@ -28,6 +28,29 @@ function lireMemoire(cle, defaut) {
 }
 function ecrireMemoire(cle, valeur) {
   try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch {}
+}
+
+// Impression / PDF : impossible quand l'app est publiée sur une page Claude
+const IMPRESSION_POSSIBLE = !window.VOLTGUIDE_SANS_IMPRESSION;
+
+// Confirmation en deux temps : 1er appui → le bouton demande confirmation,
+// 2e appui dans les 4 secondes → l'action est faite.
+// (Les fenêtres confirm() ne fonctionnent pas partout.)
+function confirmerAvant(bouton, texteConfirmation, action) {
+  if (bouton.dataset.confirmer === "oui") {
+    bouton.dataset.confirmer = "";
+    action();
+    return;
+  }
+  const texteInitial = bouton.textContent;
+  bouton.dataset.confirmer = "oui";
+  bouton.textContent = texteConfirmation;
+  bouton.classList.add("a-confirmer");
+  setTimeout(() => {
+    bouton.dataset.confirmer = "";
+    bouton.textContent = texteInitial;
+    bouton.classList.remove("a-confirmer");
+  }, 4000);
 }
 
 // Lignes d'un tableau de fiche : écrites directement, ou construites à partir des données

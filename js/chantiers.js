@@ -184,13 +184,17 @@ function reduirePhoto(fichier) {
 }
 
 $("ajouter-photo").addEventListener("change", async (e) => {
+  const illisibles = [];
   for (const fichier of e.target.files) {
     try {
       chantierOuvert.photos.push({ image: await reduirePhoto(fichier), legende: "" });
     } catch {
-      alert(`Impossible de lire la photo « ${fichier.name} ».`);
+      illisibles.push(fichier.name);
     }
   }
+  $("message-photo").textContent = illisibles.length
+    ? `Impossible de lire : ${illisibles.join(", ")}. Essaie une photo en JPEG ou PNG.`
+    : "";
   e.target.value = "";
   afficherPhotos();
   sauverChantier(chantierOuvert);
@@ -207,12 +211,13 @@ function afficherPhotos() {
       <input type="text" placeholder="Légende" value="${echapper(photo.legende)}">
       <button type="button" class="petit-bouton" aria-label="Supprimer la photo">✕</button>`;
     bloc.querySelector("input").addEventListener("input", (e) => { photo.legende = e.target.value; sauverBientot(); });
-    bloc.querySelector("button").addEventListener("click", () => {
-      if (!confirm("Supprimer cette photo ?")) return;
-      chantierOuvert.photos.splice(i, 1);
-      afficherPhotos();
-      sauverChantier(chantierOuvert);
-    });
+    const supprimer = bloc.querySelector("button");
+    supprimer.addEventListener("click", () =>
+      confirmerAvant(supprimer, "Supprimer ?", () => {
+        chantierOuvert.photos.splice(i, 1);
+        afficherPhotos();
+        sauverChantier(chantierOuvert);
+      }));
     zone.appendChild(bloc);
   });
 }
@@ -224,12 +229,16 @@ $("retour-chantiers").addEventListener("click", async () => {
   afficherListeChantiers();
 });
 
-$("supprimer-chantier").addEventListener("click", async () => {
-  if (!confirm(`Supprimer définitivement le chantier « ${chantierOuvert.nom || "Sans nom"} » ?`)) return;
-  clearTimeout(minuterie);
-  await effacerChantier(chantierOuvert.id);
-  afficherListeChantiers();
-});
+$("supprimer-chantier").addEventListener("click", (e) =>
+  confirmerAvant(e.currentTarget, "Touche encore pour supprimer définitivement", async () => {
+    clearTimeout(minuterie);
+    await effacerChantier(chantierOuvert.id);
+    afficherListeChantiers();
+  }));
+
+// ---------------------------------------------------------------------
+//  Rapport imprimable (pas disponible quand l'app est sur une page Claude)
+if (!IMPRESSION_POSSIBLE) $("rapport-chantier").hidden = true;
 
 // ---------------------------------------------------------------------
 //  Rapport imprimable (Imprimer → « Enregistrer au format PDF »)

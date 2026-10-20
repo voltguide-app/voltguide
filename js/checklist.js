@@ -52,5 +52,5 @@ afficherChecklist();
 //  Mode hors-ligne (fonctionne seulement via un serveur, pas en double-clic)
 // ---------------------------------------------------------------------
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("sw.js");
+  navigator.serviceWorker.register("sw.js").catch(() => {}); // pas grave si refusé : l'app marche quand même
 }

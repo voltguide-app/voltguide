@@ -192,7 +192,7 @@ $("form-tableau").addEventListener("submit", (e) => {
       <p class="source">⚠️ Proposition à vérifier : contrôler le calibre des différentiels selon les circuits en aval
         (surtout avec une borne de recharge) et adapter les longueurs au chantier réel.</p>
     </div>
-    <button type="button" class="secondaire" onclick="window.print()">🖨️ Imprimer / enregistrer en PDF</button>`;
+    ${IMPRESSION_POSSIBLE ? `<button type="button" class="secondaire" onclick="window.print()">🖨️ Imprimer / enregistrer en PDF</button>` : ""}`;
 
   $("resultat-tableau").scrollIntoView({ behavior: "smooth" });
 });

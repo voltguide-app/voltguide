@@ -18,7 +18,8 @@
   --fil-navette: #8e44ad;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --fond: #111315;
     --carte: #1c1f23;
     --texte: #eef0f3;
@@ -34,6 +35,24 @@
     --fil-retour: #ffa133;
     --fil-navette: #c08ae0;
   }
+}
+/* Mêmes valeurs quand le mode sombre est choisi à la main */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --fond: #111315;
+  --carte: #1c1f23;
+  --texte: #eef0f3;
+  --discret: #9aa1ab;
+  --bordure: #2c3036;
+  --accent-doux: #3a3210;
+  --sombre: #0b0c0e;
+  --ok: #4cc27f;
+  --erreur: #ff6b5b;
+  --ombre: none;
+  --fil-phase: #ff5a52;
+  --fil-neutre: #5aa2ff;
+  --fil-retour: #ffa133;
+  --fil-navette: #c08ae0;
 }
 
 * { box-sizing: border-box; }
@@ -52,7 +71,7 @@ header {
   background: var(--sombre);
   color: #fff;
   padding: 12px 16px;
-  position: sticky; top: 0; z-index: 10;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
 }
 .entete-haut { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; max-width: 720px; margin-inline: auto; }
 .logo {
@@ -187,6 +206,8 @@ button[type="submit"], .secondaire, .principal {
 }
 .secondaire { background: var(--bordure); color: var(--texte); font-weight: 600; }
 .danger { color: var(--erreur); }
+.a-confirmer { background: var(--erreur) !important; color: #fff !important; }
+.petit-bouton.a-confirmer { width: auto; padding: 0 10px; }
 .lien { background: none; border: none; color: var(--discret); font-size: 1rem; padding: 8px 0; cursor: pointer; }
 .petit-bouton {
   background: var(--bordure); color: var(--texte);
