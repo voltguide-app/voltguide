@@ -107,6 +107,54 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   await attendre(300);
   verifier(d.getElementById("liste-chantiers").textContent.includes("Maison Test"), "Chantier enregistré");
 
+  // Plan électrique
+  clic(d.querySelector("#liste-chantiers .resultat-recherche"));
+  await attendre(300);
+  clic(d.getElementById("ouvrir-plan"));
+  verifier(!d.getElementById("vue-plan").hidden && d.getElementById("vue-chantier").hidden, "Plan ouvert depuis le chantier");
+  verifier(d.querySelectorAll("#outils-plan button").length === 15, "15 outils (naviguer, déplacer, pièce + 12 symboles)");
+  w.eval(`
+    plan.pieces.push({ id: "s1", type: "sejour", nom: "", x: 1, y: 1, w: 6, h: 5 });
+    plan.pieces.push({ id: "c1", type: "chambre", nom: "Chambre 1", x: 7, y: 1, w: 3.5, h: 3 });
+    changement();
+    for (let i = 0; i < 5; i++) ajouterSymbole("prise", 2 + i * 0.5, 2);
+    ajouterSymbole("lumiere", 4, 3.5);
+    ajouterSymbole("prise-specialisee", 8, 2);
+  `);
+  let verif = d.getElementById("verif-plan").textContent;
+  verifier(verif.includes("Prises 16 A : 5 sur 8 minimum") && verif.includes("✘"), "Séjour 30 m² avec 5 prises → ✘ 5 sur 8");
+  verifier(verif.includes("sans appareil choisi"), "Prise spécialisée sans appareil signalée");
+  w.eval(`for (let i = 0; i < 3; i++) ajouterSymbole("prise", 2 + i * 0.5, 4);`);
+  verif = d.getElementById("verif-plan").textContent;
+  verifier(verif.includes("Prises 16 A : 8 sur 8 minimum"), "Séjour avec 8 prises → ✔");
+  const avant = w.eval("plan.symboles.length");
+  clic(d.getElementById("plan-annuler"));
+  verifier(w.eval("plan.symboles.length") === avant - 1, "Le bouton Annuler retire le dernier symbole");
+  verifier(d.getElementById("materiel-plan").textContent.includes("Prise 16 A"), "Liste du matériel du plan");
+  verifier(d.querySelectorAll("#svg-plan .plan-piece").length === 2 && d.querySelectorAll("#svg-plan .plan-symbole").length === avant - 1, "Pièces et symboles dessinés");
+  w.eval(`selection = plan.symboles.find((s) => s.type === "prise-specialisee").id; afficherProprietes();`);
+  const repere = d.getElementById("ps-repere");
+  repere.value = "LL"; repere.dispatchEvent(new w.Event("change"));
+  verifier(!d.getElementById("verif-plan").textContent.includes("sans appareil"), "Repère LL choisi pour la prise spécialisée");
+  if (w.VOLTGUIDE_SANS_IMPRESSION) {
+    verifier(d.getElementById("plan-pdf").hidden, "Bouton PDF du plan caché (page Claude)");
+  } else {
+    clic(d.getElementById("plan-pdf"));
+    verifier(d.getElementById("rapport").textContent.includes("Plan électrique") && d.querySelector("#rapport svg .plan-piece"), "PDF du plan préparé");
+  }
+  clic(d.getElementById("retour-plan"));
+  await attendre(300);
+  verifier(d.getElementById("resume-plan").textContent.includes("2 pièce(s)"), "Plan enregistré avec le chantier");
+  clic(d.getElementById("ouvrir-plan"));
+  clic(d.getElementById("plan-vers-tableau"));
+  verifier(d.getElementById("calculs").classList.contains("actif") && d.getElementById("t-chambres").value === "1" && d.getElementById("t-ll").checked, "Plan → générateur de tableau prérempli (1 chambre, lave-linge)");
+  verifier(d.getElementById("resultat-tableau").textContent.includes("Différentiel"), "Tableau généré depuis le plan");
+  clic(d.querySelector('nav button[data-onglet="chantiers"]'));
+  clic(d.getElementById("retour-plan"));
+  await attendre(300);
+  clic(d.getElementById("retour-chantiers"));
+  await attendre(300);
+
   // Suppression en deux appuis
   clic(d.querySelector("#liste-chantiers .resultat-recherche"));
   await attendre(300);

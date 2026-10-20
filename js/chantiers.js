@@ -39,6 +39,7 @@ const effacerChantier = (id) => operation("readwrite", (s) => s.delete(id));
 // ---------------------------------------------------------------------
 async function afficherListeChantiers() {
   $("vue-chantier").hidden = true;
+  $("vue-plan").hidden = true;
   $("vue-liste-chantiers").hidden = false;
   const zone = $("liste-chantiers");
 
@@ -96,7 +97,9 @@ function sauverBientot() {
 async function ouvrirChantier(id) {
   chantierOuvert = await lireChantier(id);
   $("vue-liste-chantiers").hidden = true;
+  $("vue-plan").hidden = true;
   $("vue-chantier").hidden = false;
+  $("resume-plan").textContent = resumePlan(chantierOuvert);
 
   // Champs texte simples : l'attribut data-champ donne le nom de la propriété
   document.querySelectorAll("#vue-chantier [data-champ]").forEach((champ) => {
@@ -165,12 +168,12 @@ $("ajouter-differentiel").addEventListener("click", () => {
   sauverBientot();
 });
 
-// --- Photos : réduites à 1280 px pour ne pas remplir la mémoire
-function reduirePhoto(fichier) {
+// --- Photos : réduites (1280 px par défaut) pour ne pas remplir la mémoire
+function reduirePhoto(fichier, tailleMax = 1280) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const echelle = Math.min(1, 1280 / Math.max(img.width, img.height));
+      const echelle = Math.min(1, tailleMax / Math.max(img.width, img.height));
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(img.width * echelle);
       canvas.height = Math.round(img.height * echelle);

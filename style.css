@@ -319,6 +319,42 @@ td:first-child { font-weight: 600; }
   color: var(--texte); font-weight: 600; cursor: pointer; margin: 0;
 }
 
+/* ===== Plan électrique ===== */
+.outils-plan button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; }
+.mini-symbole { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 0.035; }
+.mini-symbole .sym-plein { fill: currentColor; }
+.mini-symbole .sym-texte { fill: currentColor; stroke: none; font-weight: 700; font-family: system-ui, sans-serif; }
+.actions-plan { display: flex; gap: 8px; margin-bottom: 8px; }
+.petit-bouton.large { width: auto; padding: 0 14px; }
+.petit-bouton:disabled { opacity: .4; cursor: default; }
+.cadre-plan {
+  overflow: auto; max-height: 70vh;
+  border: 1px solid var(--bordure); border-radius: 12px;
+  background: var(--carte); margin-bottom: 12px;
+}
+#svg-plan { display: block; min-width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.plan-fond { fill: var(--carte); }
+.grille-fine { stroke: var(--bordure); stroke-width: 0.01; }
+.grille { stroke: var(--bordure); stroke-width: 0.025; }
+.plan-piece rect { fill: var(--accent); fill-opacity: .08; stroke: var(--texte); stroke-width: 0.06; }
+.plan-piece text { fill: var(--texte); font-family: system-ui, sans-serif; }
+.plan-piece .piece-nom { font-weight: 700; }
+.plan-piece .piece-surface { fill: var(--discret); }
+.plan-piece.selection rect { stroke: var(--accent); stroke-width: 0.1; fill-opacity: .18; }
+.plan-symbole { fill: none; stroke: var(--texte); stroke-width: 0.035; }
+.plan-symbole .sym-plein { fill: var(--texte); }
+.plan-symbole .sym-texte { fill: var(--texte); stroke: none; font-weight: 700; font-family: system-ui, sans-serif; }
+.plan-symbole .zone-clic { fill: transparent; stroke: none; }
+.plan-symbole.selection .zone-clic { fill: var(--accent); fill-opacity: .35; }
+.apercu-piece { fill: var(--accent); fill-opacity: .2; stroke: var(--accent); stroke-width: 0.06; stroke-dasharray: 0.2 0.1; }
+.verif-plan ul { list-style: none; padding: 0; margin: 4px 0 12px; }
+.verif-plan li { margin-bottom: 2px; }
+.verif-piece { border-bottom: 1px solid var(--bordure); padding-top: 8px; }
+.case-simple { display: flex; align-items: center; gap: 8px; color: var(--texte); }
+.case-simple input { width: 20px; height: 20px; accent-color: var(--accent); }
+.legende-plan { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.legende-plan span { display: inline-flex; align-items: center; gap: 6px; }
+
 /* ===== Check-list ===== */
 .point { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; color: var(--texte); margin: 0; font-size: .95rem; border-bottom: 1px solid var(--bordure); }
 .point:last-child { border-bottom: none; }
@@ -355,4 +391,6 @@ td:first-child { font-weight: 600; }
   .rapport-photos figure { margin: 0; break-inside: avoid; }
   .rapport-photos img { width: 100%; border-radius: 6px; }
   .rapport-photos figcaption { font-size: .85rem; }
+  .plan-imprime { width: 100%; height: auto; border: 1px solid #999; break-inside: avoid; }
+  #rapport ul { list-style: none; padding-left: 0; }
 }

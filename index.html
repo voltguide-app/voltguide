@@ -265,6 +265,12 @@
         </div>
 
         <div class="carte">
+          <h3>Plan électrique</h3>
+          <p id="resume-plan" class="intro"></p>
+          <button type="button" id="ouvrir-plan" class="principal">📐 Ouvrir le plan</button>
+        </div>
+
+        <div class="carte">
           <h3>Notes</h3>
           <textarea data-champ="notes" rows="5" placeholder="Remarques, matériel à prévoir, réserves…"></textarea>
         </div>
@@ -272,6 +278,54 @@
         <button type="button" id="rapport-chantier" class="principal">🖨️ Rapport PDF</button>
         <button type="button" id="supprimer-chantier" class="secondaire danger">Supprimer ce chantier</button>
         <p class="source">Enregistrement automatique, sur cet appareil uniquement.</p>
+      </div>
+
+      <!-- Plan électrique du chantier -->
+      <div id="vue-plan" hidden>
+        <button type="button" id="retour-plan" class="lien">← Retour au chantier</button>
+        <h2 id="titre-plan">Plan</h2>
+
+        <div class="pastilles outils-plan" id="outils-plan"></div>
+        <p id="aide-outil" class="intro"></p>
+
+        <div class="actions-plan">
+          <button type="button" id="plan-annuler" class="petit-bouton large">↶ Annuler</button>
+          <button type="button" id="plan-zoom-moins" class="petit-bouton" aria-label="Dézoomer">−</button>
+          <button type="button" id="plan-zoom-plus" class="petit-bouton" aria-label="Zoomer">+</button>
+        </div>
+
+        <div class="cadre-plan"><svg id="svg-plan" role="img" aria-label="Plan électrique"></svg></div>
+
+        <div id="proprietes-plan" class="carte" hidden></div>
+
+        <details class="carte">
+          <summary>⚙️ Fond de plan et dimensions</summary>
+          <div class="contenu">
+            <label class="bouton-photo">🖼️ Importer un plan (photo ou capture)
+              <input type="file" id="plan-fond" accept="image/*" hidden>
+            </label>
+            <p id="message-plan" class="intro"></p>
+            <button type="button" id="plan-retirer-fond" class="secondaire">Retirer le plan importé</button>
+            <div class="deux-colonnes">
+              <label>Largeur réelle (m) <input type="number" id="plan-largeur" min="2" step="0.1"></label>
+              <label>Hauteur réelle (m) <input type="number" id="plan-hauteur" min="2" step="0.1"></label>
+            </div>
+            <label class="case-simple"><input type="checkbox" id="plan-grille"> Quadrillage (1 carreau = 50 cm)</label>
+          </div>
+        </details>
+
+        <div class="carte">
+          <h3>Vérification NF C 15-100</h3>
+          <div id="verif-plan" class="verif-plan"></div>
+        </div>
+        <div class="carte">
+          <h3>Matériel</h3>
+          <div id="materiel-plan"></div>
+        </div>
+
+        <button type="button" id="plan-vers-tableau" class="principal">⚡ Générer le tableau à partir du plan</button>
+        <button type="button" id="plan-pdf" class="secondaire">🖨️ Plan en PDF</button>
+        <p class="source">Le plan s'enregistre automatiquement avec le chantier.</p>
       </div>
     </section>
 
@@ -315,6 +369,7 @@
   <script src="data/regles.js"></script>
   <script src="data/schemas.js"></script>
   <script src="data/config.js"></script>
+  <script src="data/symboles.js"></script>
   <!-- Code (l'ordre compte : commun.js en premier, recherche.js en dernier) -->
   <script src="js/commun.js"></script>
   <script src="js/pieces.js"></script>
@@ -323,6 +378,7 @@
   <script src="js/eclairage.js"></script>
   <script src="js/fiches.js"></script>
   <script src="js/chantiers.js"></script>
+  <script src="js/plan.js"></script>
   <script src="js/checklist.js"></script>
   <script src="js/avis.js"></script>
   <script src="js/recherche.js"></script>
