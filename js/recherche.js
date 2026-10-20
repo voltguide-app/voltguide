@@ -43,6 +43,7 @@ R.checklist.forEach((g) => INDEX.push({
   icone: "✅", titre: "Check-list : " + g.groupe, lignes: g.points, ouvrir: () => allerOnglet("checklist"),
 }));
 
+INDEX.push({ icone: "📐", titre: "Plan électrique", lignes: ["plan maison dessin symboles prises implantation PDF"], ouvrir: () => { allerOnglet("plans"); afficherListePlans(); } });
 INDEX.push({ icone: "📋", titre: "Carnet de chantier", lignes: ["chantier mesures terre isolement photos rapport PDF"], ouvrir: () => allerOnglet("chantiers") });
 
 // --- Recherche : tous les mots tapés doivent être trouvés

@@ -211,6 +211,16 @@
       </div>
     </section>
 
+    <!-- ===== Onglet : Plan ===== -->
+    <section id="plans" class="onglet">
+      <div id="vue-liste-plans">
+        <h2>Plans électriques</h2>
+        <p class="intro">Dessine le plan d'une maison, pose les prises et les points lumineux : l'app vérifie la norme et prépare le tableau. Chaque plan est enregistré avec son chantier.</p>
+        <button type="button" id="nouveau-plan" class="principal">+ Nouveau plan</button>
+        <div id="liste-plans"></div>
+      </div>
+    </section>
+
     <!-- ===== Onglet : Fiches ===== -->
     <section id="fiches" class="onglet">
       <h2>⭐ Mes favoris</h2>
@@ -284,7 +294,9 @@
       <!-- Plan électrique du chantier -->
       <div id="vue-plan" hidden>
         <button type="button" id="retour-plan" class="lien">← Retour au chantier</button>
-        <h2 id="titre-plan">Plan</h2>
+        <label>Nom du chantier ou du plan
+          <input type="text" id="plan-nom" placeholder="ex. Maison Dupont — rénovation">
+        </label>
 
         <div class="pastilles outils-plan" id="outils-plan"></div>
         <p id="aide-outil" class="intro"></p>
@@ -361,6 +373,7 @@
   <nav>
     <button data-onglet="pieces" class="actif"><span class="ico">🏠</span><span>Pièces</span></button>
     <button data-onglet="calculs"><span class="ico">🧮</span><span>Calculs</span></button>
+    <button data-onglet="plans"><span class="ico">📐</span><span>Plan</span></button>
     <button data-onglet="fiches"><span class="ico">📚</span><span>Fiches</span></button>
     <button data-onglet="chantiers"><span class="ico">📋</span><span>Chantiers</span></button>
     <button data-onglet="checklist"><span class="ico">✅</span><span>Check-list</span></button>

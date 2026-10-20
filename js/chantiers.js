@@ -39,7 +39,7 @@ const effacerChantier = (id) => operation("readwrite", (s) => s.delete(id));
 // ---------------------------------------------------------------------
 async function afficherListeChantiers() {
   $("vue-chantier").hidden = true;
-  $("vue-plan").hidden = true;
+  if ($("chantiers").contains($("vue-plan"))) $("vue-plan").hidden = true;
   $("vue-liste-chantiers").hidden = false;
   const zone = $("liste-chantiers");
 
@@ -68,7 +68,8 @@ async function afficherListeChantiers() {
   });
 }
 
-$("nouveau-chantier").addEventListener("click", async () => {
+// Crée un chantier vide et l'enregistre (aussi utilisé par l'onglet Plan)
+async function creerChantier() {
   const chantier = {
     id: Date.now().toString(),
     nom: "", client: "", adresse: "",
@@ -79,6 +80,16 @@ $("nouveau-chantier").addEventListener("click", async () => {
     photos: [],
   };
   await sauverChantier(chantier);
+  return chantier;
+}
+
+// Toucher l'onglet Chantiers rafraîchit la liste (un plan a pu être créé dans l'onglet Plan)
+document.querySelector('nav button[data-onglet="chantiers"]').addEventListener("click", () => {
+  if (!$("vue-liste-chantiers").hidden) afficherListeChantiers();
+});
+
+$("nouveau-chantier").addEventListener("click", async () => {
+  const chantier = await creerChantier();
   ouvrirChantier(chantier.id);
 });
 
@@ -97,7 +108,7 @@ function sauverBientot() {
 async function ouvrirChantier(id) {
   chantierOuvert = await lireChantier(id);
   $("vue-liste-chantiers").hidden = true;
-  $("vue-plan").hidden = true;
+  if ($("chantiers").contains($("vue-plan"))) $("vue-plan").hidden = true;
   $("vue-chantier").hidden = false;
   $("resume-plan").textContent = resumePlan(chantierOuvert);
 

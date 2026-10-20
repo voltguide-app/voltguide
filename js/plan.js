@@ -440,16 +440,31 @@ $("plan-zoom-moins").addEventListener("click", () => { zoom = Math.max(1, zoom /
 // ---------------------------------------------------------------------
 //  Ouvrir / fermer le plan d'un chantier
 // ---------------------------------------------------------------------
-function ouvrirPlan() {
+// depuis = "chantier" (bouton dans un chantier) ou "plans" (onglet Plan)
+let origine = "chantier";
+
+function ouvrirPlan(depuis = "chantier") {
+  origine = depuis === "plans" ? "plans" : "chantier";
+  // Le même écran d'édition sert aux deux onglets : on le place dans le bon
+  const onglet = origine === "plans" ? "plans" : "chantiers";
+  $(onglet).appendChild($("vue-plan"));
+  if (origine === "plans") {
+    $("vue-liste-plans").hidden = true;
+    afficherListeChantiers(); // l'onglet Chantiers revient à sa liste
+  } else {
+    $("vue-chantier").hidden = true;
+    afficherListePlans();      // l'onglet Plan revient à sa liste
+  }
+  $("retour-plan").textContent = origine === "plans" ? "← Tous les plans" : "← Retour au chantier";
+
   plan = chantierOuvert.plan || planVide();
   chantierOuvert.plan = plan;
   historique = [];
   selection = null;
   outil = "naviguer";
   zoom = 1;
-  $("vue-chantier").hidden = true;
   $("vue-plan").hidden = false;
-  $("titre-plan").textContent = "Plan : " + (chantierOuvert.nom || "chantier sans nom");
+  $("plan-nom").value = chantierOuvert.nom || "";
   $("message-plan").textContent = "";
   afficherOutils();
   afficherReglages();
@@ -460,14 +475,67 @@ function ouvrirPlan() {
   window.scrollTo(0, 0);
 }
 
-$("ouvrir-plan").addEventListener("click", ouvrirPlan);
+$("ouvrir-plan").addEventListener("click", () => ouvrirPlan("chantier"));
+
+// Nom du chantier, modifiable directement depuis le plan
+$("plan-nom").addEventListener("input", (e) => {
+  chantierOuvert.nom = e.target.value;
+  sauverBientot();
+});
 
 $("retour-plan").addEventListener("click", async () => {
   clearTimeout(minuterie);
   await sauverChantier(chantierOuvert);
   plan = null;
-  ouvrirChantier(chantierOuvert.id);
+  if (origine === "plans") afficherListePlans();
+  else ouvrirChantier(chantierOuvert.id);
 });
+
+// ---------------------------------------------------------------------
+//  Onglet Plan : liste des plans (un par chantier)
+// ---------------------------------------------------------------------
+async function afficherListePlans() {
+  if ($("plans").contains($("vue-plan"))) $("vue-plan").hidden = true;
+  $("vue-liste-plans").hidden = false;
+  const zone = $("liste-plans");
+  let chantiers;
+  try {
+    chantiers = await listerChantiers();
+  } catch {
+    zone.innerHTML = `<p class="erreur">Impossible d'ouvrir la mémoire du navigateur (navigation privée ?).</p>`;
+    return;
+  }
+  if (!chantiers.length) {
+    zone.innerHTML = `<p class="intro">Aucun plan pour l'instant. Touche « + Nouveau plan » pour commencer.</p>`;
+    return;
+  }
+  chantiers.sort((a, b) => b.date.localeCompare(a.date));
+  zone.innerHTML = "";
+  chantiers.forEach((c) => {
+    const bouton = document.createElement("button");
+    bouton.className = "carte resultat-recherche";
+    bouton.innerHTML = `<strong>📐 ${echapper(c.nom || "Sans nom")}</strong>
+      <span>${new Date(c.date).toLocaleDateString("fr-FR")}${c.client ? " · " + echapper(c.client) : ""} · ${resumePlan(c)}</span>`;
+    bouton.addEventListener("click", async () => {
+      chantierOuvert = await lireChantier(c.id);
+      ouvrirPlan("plans");
+    });
+    zone.appendChild(bouton);
+  });
+}
+
+$("nouveau-plan").addEventListener("click", async () => {
+  chantierOuvert = await creerChantier();
+  ouvrirPlan("plans");
+  $("plan-nom").focus();
+});
+
+// Toucher l'onglet Plan : on garde le plan ouvert s'il y en a un, sinon la liste
+document.querySelector('nav button[data-onglet="plans"]').addEventListener("click", () => {
+  if (!($("plans").contains($("vue-plan")) && !$("vue-plan").hidden)) afficherListePlans();
+});
+
+afficherListePlans();
 
 // Résumé affiché sur la fiche du chantier
 function resumePlan(c) {

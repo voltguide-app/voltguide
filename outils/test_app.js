@@ -165,6 +165,32 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   await attendre(300);
   verifier(d.getElementById("liste-chantiers").textContent.includes("Aucun chantier"), "2e appui : chantier supprimé");
 
+  // Onglet Plan
+  clic(d.querySelector('nav button[data-onglet="plans"]'));
+  await attendre(300);
+  verifier(d.getElementById("plans").classList.contains("actif") && d.getElementById("liste-plans").textContent.includes("Aucun plan"), "Onglet Plan : liste vide");
+  clic(d.getElementById("nouveau-plan"));
+  await attendre(300);
+  verifier(d.getElementById("plans").contains(d.getElementById("vue-plan")) && !d.getElementById("vue-plan").hidden, "Nouveau plan ouvert dans l'onglet Plan");
+  verifier(d.getElementById("retour-plan").textContent.includes("Tous les plans"), "Bouton retour vers la liste des plans");
+  saisir(d.getElementById("plan-nom"), "Plan Test");
+  w.eval(`plan.pieces.push({ id: "p1", type: "chambre", nom: "", x: 1, y: 1, w: 3, h: 3 }); changement();`);
+  clic(d.getElementById("retour-plan"));
+  await attendre(400);
+  verifier(d.getElementById("liste-plans").textContent.includes("Plan Test") && d.getElementById("liste-plans").textContent.includes("1 pièce(s)"), "Plan enregistré et listé dans l'onglet Plan");
+  clic(d.querySelector('nav button[data-onglet="chantiers"]'));
+  await attendre(300);
+  verifier(d.getElementById("liste-chantiers").textContent.includes("Plan Test"), "Le plan apparaît aussi dans Chantiers");
+  clic(d.querySelector("#liste-chantiers .resultat-recherche"));
+  await attendre(300);
+  clic(d.getElementById("ouvrir-plan"));
+  await attendre(300);
+  verifier(d.getElementById("chantiers").contains(d.getElementById("vue-plan")) && !d.getElementById("vue-plan").hidden, "Le plan s'ouvre aussi depuis le chantier");
+  verifier(!d.getElementById("vue-liste-plans").hidden, "L'onglet Plan revient à sa liste");
+  clic(d.getElementById("retour-plan"));
+  await attendre(300);
+  verifier(!d.getElementById("vue-chantier").hidden, "Retour au chantier depuis le plan");
+
   // Bouton avis : caché tant que le lien n'est pas réglé
   verifier(d.getElementById("bloc-avis").hidden === !w.VOLTGUIDE_CONFIG.lienAvis, "Bouton « Donner mon avis » " + (w.VOLTGUIDE_CONFIG.lienAvis ? "visible" : "caché (pas encore de lien)"));
 
