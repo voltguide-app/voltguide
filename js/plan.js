@@ -17,6 +17,7 @@ const OUTILS = [
   { id: "naviguer", nom: "🖐️ Naviguer", aide: "Fais défiler le plan. Touche une pièce ou un symbole pour le modifier." },
   { id: "deplacer", nom: "✥ Déplacer", aide: "Fais glisser une pièce ou un symbole pour le déplacer." },
   { id: "piece", nom: "▭ Pièce", aide: "Fais glisser ton doigt pour dessiner une pièce." },
+  { id: "echelle", nom: "📏 Échelle", aide: "Trace un trait sur une longueur que tu connais (un mur), puis entre sa vraie longueur." },
   ...SYM.map((s) => ({ id: "sym:" + s.id, nom: s.court, symbole: s, aide: `Touche le plan pour poser : ${s.nom}.` })),
 ];
 
@@ -26,11 +27,12 @@ let selection = null;   // id de la pièce ou du symbole sélectionné
 let zoom = 1;
 let historique = [];    // pour le bouton « Annuler »
 let geste = null;       // dessin ou déplacement en cours
+let traitEchelle = null; // trait tracé avec l'outil Échelle, en attente de sa vraie longueur
 
 const nouvelId = () => Math.random().toString(36).slice(2, 9);
 const arrondir = (v, pas) => Math.round(v / pas) * pas;
 const borner = (v, min, max) => Math.min(max, Math.max(min, v));
-const planVide = () => ({ image: null, ratio: null, largeur: 12, hauteur: 9, grille: true, pieces: [], symboles: [] });
+const planVide = () => ({ image: null, ratio: null, largeur: 12, hauteur: 9, hauteurPlafond: 2.5, grille: true, pieces: [], symboles: [] });
 const estPiece = (el) => el.w !== undefined;
 const nomPiece = (p) => p.nom || TYPES_PIECES.find((t) => t.id === p.type).nom;
 
@@ -74,6 +76,12 @@ function contenuSVG(pl, avecSelection) {
     html += `<g data-id="${s.id}" transform="translate(${s.x} ${s.y})" class="plan-symbole${sel}">
       <circle r="0.3" class="zone-clic"/>${symbole(s.type).dessin(s)}</g>`;
   });
+
+  const trait = geste?.type === "echelle" ? geste : traitEchelle;
+  if (avecSelection && trait) {
+    html += `<line x1="${trait.x0}" y1="${trait.y0}" x2="${trait.x1}" y2="${trait.y1}" class="trait-echelle"/>
+      <circle cx="${trait.x0}" cy="${trait.y0}" r="0.1" class="bout-echelle"/><circle cx="${trait.x1}" cy="${trait.y1}" r="0.1" class="bout-echelle"/>`;
+  }
 
   if (avecSelection && geste?.type === "dessin") {
     const x = Math.min(geste.x0, geste.x1), y = Math.min(geste.y0, geste.y1);
@@ -144,6 +152,9 @@ svgPlan.addEventListener("pointerdown", (e) => {
   } else if (outil === "piece") {
     const x = arrondir(p.x, 0.1), y = arrondir(p.y, 0.1);
     geste = { type: "dessin", x0: x, y0: y, x1: x, y1: y };
+  } else if (outil === "echelle") {
+    traitEchelle = null;
+    geste = { type: "echelle", x0: p.x, y0: p.y, x1: p.x, y1: p.y };
   } else {
     ajouterSymbole(outil.slice(4), p.x, p.y);
   }
@@ -160,6 +171,9 @@ svgPlan.addEventListener("pointermove", (e) => {
   } else if (geste.type === "dessin") {
     geste.x1 = arrondir(p.x, 0.1);
     geste.y1 = arrondir(p.y, 0.1);
+  } else if (geste.type === "echelle") {
+    geste.x1 = p.x;
+    geste.y1 = p.y;
   }
   dessinerPlan();
 });
@@ -173,6 +187,12 @@ svgPlan.addEventListener("pointerup", (e) => {
     if (Math.hypot(e.clientX - g.cx, e.clientY - g.cy) < 10) selectionner(g.id);
   } else if (g.type === "deplacer") {
     if (g.bouge) changement(); else historique.pop();
+  } else if (g.type === "echelle") {
+    if (Math.hypot(g.x1 - g.x0, g.y1 - g.y0) > 0.2) {
+      traitEchelle = { x0: g.x0, y0: g.y0, x1: g.x1, y1: g.y1 };
+      selection = null;
+      afficherProprietes();
+    }
   } else if (g.type === "dessin") {
     const w = Math.abs(g.x1 - g.x0), h = Math.abs(g.y1 - g.y0);
     if (w >= 0.5 && h >= 0.5) {
@@ -242,7 +262,7 @@ $("plan-annuler").addEventListener("click", () => {
 function changement() {
   dessinerPlan();
   afficherVerification();
-  afficherMateriel();
+  afficherListeAchat();
   chantierOuvert.plan = plan;
   sauverBientot();
 }
@@ -252,6 +272,23 @@ function changement() {
 // ---------------------------------------------------------------------
 function afficherProprietes() {
   const zone = $("proprietes-plan");
+  if (traitEchelle) {
+    const actuelle = Math.hypot(traitEchelle.x1 - traitEchelle.x0, traitEchelle.y1 - traitEchelle.y0);
+    zone.hidden = false;
+    zone.innerHTML = `
+      <h3>📏 Mettre le plan à l'échelle</h3>
+      <p class="intro">Sur le plan, ce trait mesure actuellement <strong>${fr(actuelle, 2)} m</strong>.</p>
+      <label>Sa vraie longueur (m) <input type="number" id="longueur-reelle" min="0.1" step="0.01" placeholder="ex. 4,20"></label>
+      <button type="button" id="appliquer-echelle" class="principal">Appliquer l'échelle</button>
+      <button type="button" id="annuler-echelle" class="secondaire">Annuler</button>`;
+    $("appliquer-echelle").addEventListener("click", () => {
+      const reelle = parseFloat($("longueur-reelle").value);
+      if (!(reelle > 0)) { $("longueur-reelle").focus(); return; }
+      mettreAEchelle(reelle / actuelle);
+    });
+    $("annuler-echelle").addEventListener("click", () => { traitEchelle = null; afficherProprietes(); dessinerPlan(); });
+    return;
+  }
   const el = selection && trouver(selection);
   if (!el) { zone.hidden = true; return; }
   zone.hidden = false;
@@ -357,32 +394,6 @@ function afficherVerification() {
 }
 
 // ---------------------------------------------------------------------
-//  Liste du matériel
-// ---------------------------------------------------------------------
-function materielPlan(pl) {
-  const liste = {};
-  pl.symboles.forEach((s) => {
-    let nom = symbole(s.type).nom;
-    if (s.type === "prise-specialisee") {
-      const r = REPERES_SPECIALISES.find((x) => x.code === s.repere);
-      nom += r ? ` (${r.nom})` : " (appareil à choisir)";
-    }
-    liste[nom] = (liste[nom] || 0) + 1;
-  });
-  return Object.entries(liste).sort((a, b) => b[1] - a[1]);
-}
-
-function materielHTML(m) {
-  return m.length
-    ? `<ul class="regles">${m.map(([nom, n]) => `<li>${n} × ${nom}</li>`).join("")}</ul>`
-    : `<p class="intro">Aucun symbole posé.</p>`;
-}
-
-function afficherMateriel() {
-  $("materiel-plan").innerHTML = materielHTML(materielPlan(plan));
-}
-
-// ---------------------------------------------------------------------
 //  Réglages : fond de plan, dimensions, quadrillage, zoom
 // ---------------------------------------------------------------------
 function afficherReglages() {
@@ -390,6 +401,7 @@ function afficherReglages() {
   $("plan-hauteur").value = plan.hauteur;
   $("plan-hauteur").disabled = !!plan.image;
   $("plan-grille").checked = plan.grille;
+  $("plan-plafond").value = plan.hauteurPlafond;
   $("plan-retirer-fond").hidden = !plan.image;
 }
 
@@ -434,6 +446,28 @@ $("plan-hauteur").addEventListener("change", (e) => {
 
 $("plan-grille").addEventListener("change", (e) => { plan.grille = e.target.checked; changement(); });
 
+$("plan-plafond").addEventListener("change", (e) => {
+  plan.hauteurPlafond = Math.max(2, parseFloat(e.target.value) || 2.5);
+  afficherReglages();
+  changement();
+});
+
+// Agrandit ou réduit tout le plan (pièces et symboles compris)
+function mettreAEchelle(facteur) {
+  memoriser();
+  plan.largeur = Math.round(plan.largeur * facteur * 100) / 100;
+  plan.hauteur = Math.round(plan.hauteur * facteur * 100) / 100;
+  plan.pieces.forEach((p) => { p.x *= facteur; p.y *= facteur; p.w *= facteur; p.h *= facteur; });
+  plan.symboles.forEach((s) => { s.x *= facteur; s.y *= facteur; });
+  traitEchelle = null;
+  outil = "naviguer";
+  afficherOutils();
+  afficherReglages();
+  afficherProprietes();
+  changement();
+  $("message-plan").textContent = `✔ Plan mis à l'échelle : ${fr(plan.largeur, 2)} m × ${fr(plan.hauteur, 2)} m.`;
+}
+
 $("plan-zoom-plus").addEventListener("click", () => { zoom = Math.min(4, zoom * 1.5); dessinerPlan(); });
 $("plan-zoom-moins").addEventListener("click", () => { zoom = Math.max(1, zoom / 1.5); dessinerPlan(); });
 
@@ -461,7 +495,11 @@ function ouvrirPlan(depuis = "chantier") {
   chantierOuvert.plan = plan;
   historique = [];
   selection = null;
+  traitEchelle = null;
   outil = "naviguer";
+  plan.hauteurPlafond = plan.hauteurPlafond || 2.5;
+  $("message-liste").textContent = "";
+  $("texte-liste").hidden = true;
   zoom = 1;
   $("vue-plan").hidden = false;
   $("plan-nom").value = chantierOuvert.nom || "";
@@ -470,7 +508,7 @@ function ouvrirPlan(depuis = "chantier") {
   afficherReglages();
   dessinerPlan();
   afficherVerification();
-  afficherMateriel();
+  afficherListeAchat();
   afficherProprietes();
   window.scrollTo(0, 0);
 }
@@ -605,8 +643,8 @@ $("plan-pdf").addEventListener("click", () => {
     <h2>Vérification NF C 15-100</h2>
     ${verificationHTML(verifierPlan(plan))}
 
-    <h2>Matériel</h2>
-    ${materielHTML(materielPlan(plan))}
+    <h2>Liste du matériel</h2>
+    ${listeAchatHTML()}
 
     <p class="source">Plan réalisé avec VoltGuide le ${new Date().toLocaleDateString("fr-FR")}.
       Vérification indicative : elle ne remplace pas la norme NF C 15-100.</p>`;

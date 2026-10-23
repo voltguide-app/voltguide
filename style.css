@@ -347,6 +347,15 @@ td:first-child { font-weight: 600; }
 .plan-symbole .zone-clic { fill: transparent; stroke: none; }
 .plan-symbole.selection .zone-clic { fill: var(--accent); fill-opacity: .35; }
 .apercu-piece { fill: var(--accent); fill-opacity: .2; stroke: var(--accent); stroke-width: 0.06; stroke-dasharray: 0.2 0.1; }
+.trait-echelle { stroke: var(--erreur); stroke-width: 0.06; stroke-dasharray: 0.15 0.08; }
+.bout-echelle { fill: var(--erreur); }
+.lignes-achat { display: grid; gap: 2px; }
+.ligne-achat { display: flex; align-items: center; gap: 8px; margin: 0; padding: 6px 0; color: var(--texte); border-bottom: 1px solid var(--bordure); }
+.ligne-achat span { flex: 1; min-width: 0; }
+.ligne-achat input[type="number"] { width: 80px; margin: 0; padding: 6px 8px; text-align: right; font-variant-numeric: tabular-nums; }
+.ligne-achat small { width: 24px; color: var(--discret); }
+.ligne-achat.modifiee input { border-color: var(--accent); }
+#texte-liste { margin-bottom: 8px; font-size: .85rem; }
 .verif-plan ul { list-style: none; padding: 0; margin: 4px 0 12px; }
 .verif-plan li { margin-bottom: 2px; }
 .verif-piece { border-bottom: 1px solid var(--bordure); padding-top: 8px; }

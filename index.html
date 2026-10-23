@@ -353,7 +353,9 @@
               <label>Largeur réelle (m) <input type="number" id="plan-largeur" min="2" step="0.1"></label>
               <label>Hauteur réelle (m) <input type="number" id="plan-hauteur" min="2" step="0.1"></label>
             </div>
+            <label>Hauteur sous plafond (m) <input type="number" id="plan-plafond" min="2" step="0.05"></label>
             <label class="case-simple"><input type="checkbox" id="plan-grille"> Quadrillage (1 carreau = 50 cm)</label>
+            <p class="source">Astuce : avec l'outil 📏 Échelle, trace un mur dont tu connais la longueur pour régler le plan au centimètre.</p>
           </div>
         </details>
 
@@ -362,8 +364,12 @@
           <div id="verif-plan" class="verif-plan"></div>
         </div>
         <div class="carte">
-          <h3>Matériel</h3>
-          <div id="materiel-plan"></div>
+          <h3>🛒 Matériel à acheter</h3>
+          <div id="liste-achat"></div>
+          <button type="button" id="copier-liste" class="principal">📋 Copier la liste pour le fournisseur</button>
+          <p id="message-liste" class="intro" role="status"></p>
+          <textarea id="texte-liste" rows="8" hidden aria-label="Liste du matériel"></textarea>
+          <button type="button" id="reinitialiser-liste" class="secondaire">Remettre les quantités calculées</button>
         </div>
 
         <button type="button" id="plan-vers-tableau" class="principal">⚡ Générer le tableau à partir du plan</button>
@@ -413,6 +419,7 @@
   <script src="js/fiches.js"></script>
   <script src="js/chantiers.js"></script>
   <script src="js/plan.js"></script>
+  <script src="js/liste.js"></script>
   <script src="js/checklist.js"></script>
   <script src="js/gammes.js"></script>
   <script src="js/avis.js"></script>

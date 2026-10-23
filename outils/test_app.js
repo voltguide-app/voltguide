@@ -112,7 +112,7 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   await attendre(300);
   clic(d.getElementById("ouvrir-plan"));
   verifier(!d.getElementById("vue-plan").hidden && d.getElementById("vue-chantier").hidden, "Plan ouvert depuis le chantier");
-  verifier(d.querySelectorAll("#outils-plan button").length === 15, "15 outils (naviguer, déplacer, pièce + 12 symboles)");
+  verifier(d.querySelectorAll("#outils-plan button").length === 16, "16 outils (naviguer, déplacer, pièce, échelle + 12 symboles)");
   w.eval(`
     plan.pieces.push({ id: "s1", type: "sejour", nom: "", x: 1, y: 1, w: 6, h: 5 });
     plan.pieces.push({ id: "c1", type: "chambre", nom: "Chambre 1", x: 7, y: 1, w: 3.5, h: 3 });
@@ -130,12 +130,39 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   const avant = w.eval("plan.symboles.length");
   clic(d.getElementById("plan-annuler"));
   verifier(w.eval("plan.symboles.length") === avant - 1, "Le bouton Annuler retire le dernier symbole");
-  verifier(d.getElementById("materiel-plan").textContent.includes("Prise 16 A"), "Liste du matériel du plan");
+  verifier(d.getElementById("liste-achat").textContent.includes("Prise 2P+T 16 A"), "Liste d'achat : prises");
+  verifier(d.getElementById("liste-achat").textContent.includes("Place le tableau"), "Sans tableau : demande de placer le tableau");
   verifier(d.querySelectorAll("#svg-plan .plan-piece").length === 2 && d.querySelectorAll("#svg-plan .plan-symbole").length === avant - 1, "Pièces et symboles dessinés");
   w.eval(`selection = plan.symboles.find((s) => s.type === "prise-specialisee").id; afficherProprietes();`);
   const repere = d.getElementById("ps-repere");
   repere.value = "LL"; repere.dispatchEvent(new w.Event("change"));
   verifier(!d.getElementById("verif-plan").textContent.includes("sans appareil"), "Repère LL choisi pour la prise spécialisée");
+
+  // Liste d'achat avec le tableau placé
+  w.eval(`ajouterSymbole("tableau", 1.5, 1.5)`);
+  let liste = d.getElementById("liste-achat").textContent.replace(/\s+/g, " ");
+  verifier(liste.includes("Gaine ICTA préfilée 3G1,5") && liste.includes("Gaine ICTA préfilée 3G2,5"), "Gaines préfilées 1,5 et 2,5 mm² calculées");
+  verifier(liste.includes("Coffret") && liste.includes("Disjoncteur 20 A") && liste.includes("Interrupteur différentiel"), "Tableau dans la liste d'achat");
+  verifier(liste.includes("Boîte DCL plafond") && liste.includes("Bornes de connexion"), "Boîtes DCL et petites fournitures");
+  const calc = w.eval(`circuitsDuPlan({ hauteurPlafond: 2.5, pieces: [], symboles: [
+    { id: "t", type: "tableau", x: 0, y: 0 }, { id: "p", type: "prise", x: 3, y: 4 } ] })`);
+  verifier(Math.abs(calc.circuits[0].longueur - 12.65) < 0.01, "Longueur de gaine : (1,5 + 7 + 2,5) × 1,15 = 12,65 m");
+  const champ = d.querySelector("#liste-achat input[data-cle]");
+  champ.value = "42"; champ.dispatchEvent(new w.Event("change", { bubbles: true }));
+  verifier(d.querySelector(`#liste-achat input[data-cle="${champ.dataset.cle}"]`).value === "42" && d.querySelector("#liste-achat .ligne-achat.modifiee"), "Quantité corrigée à la main et gardée");
+  clic(d.getElementById("copier-liste"));
+  await attendre(100);
+  verifier(d.getElementById("texte-liste").value.includes("Liste de matériel") && d.getElementById("texte-liste").value.includes("42"), "Texte de la liste prêt à copier");
+  clic(d.getElementById("reinitialiser-liste"));
+  verifier(!d.querySelector("#liste-achat .ligne-achat.modifiee"), "Quantités remises aux valeurs calculées");
+
+  // Mise à l'échelle : un trait de 6 m qui mesure en vrai 12 m → tout est doublé
+  w.eval(`traitEchelle = { x0: 1, y0: 1, x1: 7, y1: 1 }; afficherProprietes();`);
+  d.getElementById("longueur-reelle").value = "12";
+  clic(d.getElementById("appliquer-echelle"));
+  verifier(w.eval("plan.largeur") === 24 && w.eval('plan.pieces.find((p) => p.id === "s1").w') === 12, "Échelle appliquée : plan et pièces doublés");
+  clic(d.getElementById("plan-annuler"));
+  verifier(w.eval("plan.largeur") === 12, "Annuler l'échelle");
   if (w.VOLTGUIDE_SANS_IMPRESSION) {
     verifier(d.getElementById("plan-pdf").hidden, "Bouton PDF du plan caché (page Claude)");
   } else {

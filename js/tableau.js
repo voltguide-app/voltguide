@@ -75,6 +75,13 @@ function genererTableau(p) {
   // --- Longueur de câble estimée pour chaque circuit
   circuits.forEach((c) => (c.longueur = p.distance + c.points * METRES_PAR_POINT));
 
+  return completerTableau(circuits, p);
+}
+
+// Répartit des circuits déjà calculés sur les différentiels, dimensionne le coffret
+// et compte le matériel. Sert au générateur et à la liste d'achat du plan.
+// p : { surface (m²), chauffeEau (true/false) }
+function completerTableau(circuits, p) {
   // -------------------------------------------------------------------
   //  Interrupteurs différentiels
   // -------------------------------------------------------------------
