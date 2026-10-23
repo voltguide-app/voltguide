@@ -42,12 +42,6 @@ window.GAMMES = [
       { nom: "Noir mat", plaque: "#2b2b2d" },
     ],
   },
-  {
-    id: "legrand-niloe", marque: "Legrand", nom: "Niloé", prix: 1, forme: "carre-arrondi", lien: "https://www.legrand.fr/pro/catalogue", lienGeneral: true,
-    description: "Gamme simple et économique, éco-conçue.",
-    points: ["Prix accessible", "Éco-conception"],
-    finitions: [{ nom: "Blanc", plaque: "#f4f4f2" }],
-  },
 
   // ----- Schneider Electric -----
   {
