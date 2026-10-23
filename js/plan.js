@@ -591,7 +591,8 @@ $("plan-pdf").addEventListener("click", () => {
     <p><strong>${echapper(c.nom || "Sans nom")}</strong><br>
       ${c.client ? "Client : " + echapper(c.client) + "<br>" : ""}
       ${c.adresse ? "Adresse : " + echapper(c.adresse) + "<br>" : ""}
-      Date : ${new Date(c.date).toLocaleDateString("fr-FR")}</p>
+      Date : ${new Date(c.date).toLocaleDateString("fr-FR")}
+      ${c.appareillage ? "<br>Appareillage : " + echapper(resumeAppareillage(c)) : ""}</p>
     <svg viewBox="0 0 ${plan.largeur} ${plan.hauteur}" class="plan-imprime">${contenuSVG(plan, false)}</svg>
 
     <h2>Légende</h2>

@@ -40,7 +40,12 @@ S.forEach((s) => INDEX.push({
 ].forEach(([id, titre, lignes]) => INDEX.push({ icone: "🧮", titre, lignes, ouvrir: () => ouvrirCalcul(id) }));
 
 R.checklist.forEach((g) => INDEX.push({
-  icone: "✅", titre: "Check-list : " + g.groupe, lignes: g.points, ouvrir: () => allerOnglet("checklist"),
+  icone: "✅", titre: "Check-list Consuel : " + g.groupe, lignes: [...g.points, "Dans chaque chantier"], ouvrir: () => allerOnglet("chantiers"),
+}));
+
+G.forEach((g) => INDEX.push({
+  icone: "🎨", titre: `Gamme : ${g.marque} ${g.nom}`, lignes: [g.description, ...g.points, ...g.finitions.map((f) => f.nom)],
+  ouvrir: () => { allerOnglet("gammes"); $("gamme-" + g.id)?.scrollIntoView({ behavior: "smooth" }); },
 }));
 
 INDEX.push({ icone: "📐", titre: "Plan électrique", lignes: ["plan maison dessin symboles prises implantation PDF"], ouvrir: () => { allerOnglet("plans"); afficherListePlans(); } });

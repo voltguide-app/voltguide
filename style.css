@@ -355,6 +355,31 @@ td:first-child { font-weight: 600; }
 .legende-plan { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .legende-plan span { display: inline-flex; align-items: center; gap: 6px; }
 
+/* ===== Gammes d'appareillage ===== */
+.gamme { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.gamme-visuel { flex: 0 0 140px; margin: 0 auto; text-align: center; }
+.apercu-plaque { width: 140px; height: 140px; display: block; }
+.finition-nom { margin: 4px 0 0; font-size: .85rem; color: var(--discret); }
+.gamme-infos { flex: 1 1 260px; min-width: 0; }
+.gamme-infos h3 { margin: 0 0 4px; font-size: 1.3rem; }
+.gamme-infos p { margin: 0 0 8px; }
+.gamme-marque { text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; font-weight: 700; color: var(--discret); }
+.gamme-niveau { font-size: .9rem; color: var(--discret); }
+.prix { font-weight: 800; color: var(--texte); letter-spacing: 1px; margin-right: 6px; }
+.prix-vide { opacity: .25; }
+.finitions { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
+.pastille-finition {
+  width: 40px; height: 40px; padding: 3px;
+  border-radius: 50%; border: 2px solid var(--bordure);
+  background: var(--carte); cursor: pointer;
+}
+.pastille-finition span { display: block; width: 100%; height: 100%; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
+.pastille-finition.actif { border-color: var(--accent); border-width: 3px; }
+.lien-fabricant { display: inline-block; margin: 6px 0 10px; color: var(--texte); font-weight: 600; }
+.choisir-gamme { margin-top: 4px; }
+.bandeau-choix { border: 2px solid var(--accent); }
+.bandeau-choix p { margin: 0 0 8px; }
+
 /* ===== Check-list ===== */
 .point { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; color: var(--texte); margin: 0; font-size: .95rem; border-bottom: 1px solid var(--bordure); }
 .point:last-child { border-bottom: none; }

@@ -221,6 +221,20 @@
       </div>
     </section>
 
+    <!-- ===== Onglet : Gammes ===== -->
+    <section id="gammes" class="onglet">
+      <h2>Gammes d'appareillage</h2>
+      <div id="bandeau-choix" class="carte info bandeau-choix" hidden>
+        <p>Choix pour le chantier : <strong id="choix-pour"></strong><br>
+          Touche une couleur pour changer la finition, puis « Choisir ».</p>
+        <button type="button" id="annuler-choix" class="secondaire">Annuler</button>
+      </div>
+      <p class="intro">Présente les gammes au client : touche une couleur pour voir la finition.</p>
+      <div class="pastilles" id="filtres-gammes"></div>
+      <div id="liste-gammes"></div>
+      <p class="source">Dessins et couleurs indicatifs. Pour les photos et les références exactes, voir le site du fabricant.</p>
+    </section>
+
     <!-- ===== Onglet : Fiches ===== -->
     <section id="fiches" class="onglet">
       <h2>⭐ Mes favoris</h2>
@@ -264,6 +278,22 @@
           <h3>Test des différentiels (bouton test)</h3>
           <div id="chantier-differentiels"></div>
           <button type="button" id="ajouter-differentiel" class="secondaire">+ Ajouter un différentiel</button>
+        </div>
+
+        <details class="carte" id="carte-checklist">
+          <summary>✅ Autocontrôle avant le Consuel <span id="progression-courte" class="compteur"></span></summary>
+          <div class="contenu">
+            <p id="progression" class="progression"></p>
+            <div class="barre"><div id="barre-remplie"></div></div>
+            <div id="liste-checklist"></div>
+            <button type="button" id="reset-checklist" class="secondaire">Tout décocher</button>
+          </div>
+        </details>
+
+        <div class="carte">
+          <h3>🎨 Appareillage choisi par le client</h3>
+          <p id="resume-appareillage" class="intro"></p>
+          <button type="button" id="choisir-gamme" class="secondaire">Choisir une gamme avec le client</button>
         </div>
 
         <div class="carte">
@@ -342,17 +372,6 @@
       </div>
     </section>
 
-    <!-- ===== Onglet : Check-list ===== -->
-    <section id="checklist" class="onglet">
-      <h2>Autocontrôle avant le Consuel</h2>
-      <div class="carte">
-        <p id="progression" class="progression"></p>
-        <div class="barre"><div id="barre-remplie"></div></div>
-      </div>
-      <div id="liste-checklist"></div>
-      <button id="reset-checklist" class="secondaire">Tout décocher</button>
-    </section>
-
     <div id="bloc-avis" class="carte avis" hidden>
       <div>
         <strong>Tu testes VoltGuide ?</strong>
@@ -374,9 +393,9 @@
     <button data-onglet="pieces" class="actif"><span class="ico">🏠</span><span>Pièces</span></button>
     <button data-onglet="calculs"><span class="ico">🧮</span><span>Calculs</span></button>
     <button data-onglet="plans"><span class="ico">📐</span><span>Plan</span></button>
+    <button data-onglet="gammes"><span class="ico">🎨</span><span>Gammes</span></button>
     <button data-onglet="fiches"><span class="ico">📚</span><span>Fiches</span></button>
     <button data-onglet="chantiers"><span class="ico">📋</span><span>Chantiers</span></button>
-    <button data-onglet="checklist"><span class="ico">✅</span><span>Check-list</span></button>
   </nav>
 
   <!-- Données -->
@@ -384,6 +403,7 @@
   <script src="data/schemas.js"></script>
   <script src="data/config.js"></script>
   <script src="data/symboles.js"></script>
+  <script src="data/gammes.js"></script>
   <!-- Code (l'ordre compte : commun.js en premier, recherche.js en dernier) -->
   <script src="js/commun.js"></script>
   <script src="js/pieces.js"></script>
@@ -394,6 +414,7 @@
   <script src="js/chantiers.js"></script>
   <script src="js/plan.js"></script>
   <script src="js/checklist.js"></script>
+  <script src="js/gammes.js"></script>
   <script src="js/avis.js"></script>
   <script src="js/recherche.js"></script>
 </body>

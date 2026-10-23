@@ -2,8 +2,8 @@
 //  Test automatique de VoltGuide dans un navigateur simulé (jsdom)
 //
 //  Utilisation :
-//    NODE_PATH=<dossier node_modules avec jsdom et fake-indexeddb> \
-//      node outils/test_app.js [fichier.html]
+//    NODE_PATH=~/.local/opt/voltguide-test/node_modules \
+//      ~/.local/opt/node/bin/node outils/test_app.js [fichier.html]
 //  Sans fichier, teste index.html.
 // =====================================================================
 const { JSDOM, VirtualConsole } = require("jsdom");
@@ -48,7 +48,7 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   envoyer("form-tableau");
   const res = d.getElementById("resultat-tableau").textContent.replace(/\s+/g, " ");
   verifier(res.includes("Différentiel 1") && res.includes("type A"), "Tableau généré avec différentiels");
-  const comptes = [...d.querySelectorAll(".compteur")].map((c) => c.textContent);
+  const comptes = [...d.querySelectorAll("#resultat-tableau .compteur")].map((c) => c.textContent);
   verifier(comptes.every((c) => parseInt(c) <= 8), "8 circuits max par différentiel : " + comptes.join(", "));
   const diffA = [...d.querySelectorAll(".differentiel")].find((x) => x.textContent.includes("type A"));
   verifier(diffA.textContent.includes("Plaque") && diffA.textContent.includes("Lave-linge"), "Plaque + lave-linge sur le type A");
@@ -194,9 +194,31 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   // Bouton avis : caché tant que le lien n'est pas réglé
   verifier(d.getElementById("bloc-avis").hidden === !w.VOLTGUIDE_CONFIG.lienAvis, "Bouton « Donner mon avis » " + (w.VOLTGUIDE_CONFIG.lienAvis ? "visible" : "caché (pas encore de lien)"));
 
-  // Check-list
-  clic(d.querySelector('nav button[data-onglet="checklist"]'));
-  verifier(d.querySelectorAll(".point").length > 15, "Check-list affichée");
+  // Check-list Consuel dans le chantier (le chantier « Plan Test » est ouvert)
+  verifier(d.querySelectorAll("#carte-checklist .point").length > 15, "Check-list Consuel dans le chantier");
+  const premiere = d.querySelector("#carte-checklist .point input");
+  premiere.checked = true; premiere.dispatchEvent(new w.Event("change"));
+  verifier(/^1\//.test(d.getElementById("progression-courte").textContent), "Case cochée → 1 point vérifié");
+  verifier(!d.querySelector('nav button[data-onglet="checklist"]'), "Plus d'onglet Check-list dans la barre");
+
+  // Gammes d'appareillage
+  clic(d.querySelector('nav button[data-onglet="gammes"]'));
+  verifier(d.querySelectorAll("#liste-gammes .gamme").length === 11, "11 gammes affichées");
+  clic(d.querySelector('#filtres-gammes [data-marque="Hager"]'));
+  verifier(d.querySelectorAll("#liste-gammes .gamme").length === 2, "Filtre Hager → 2 gammes");
+  clic(d.querySelector('#filtres-gammes [data-marque="Toutes"]'));
+  clic(d.querySelector('nav button[data-onglet="chantiers"]'));
+  clic(d.getElementById("choisir-gamme"));
+  verifier(d.getElementById("gammes").classList.contains("actif") && !d.getElementById("bandeau-choix").hidden, "Choix de gamme ouvert depuis le chantier");
+  clic(d.querySelector('[data-gamme="schneider-odace"][data-finition="2"]'));
+  verifier(d.querySelector("#gamme-schneider-odace .finition-nom").textContent === "Laiton", "Finition Laiton affichée");
+  clic(d.querySelector('.choisir-gamme[data-gamme="schneider-odace"]'));
+  await attendre(400);
+  verifier(d.getElementById("resume-appareillage").textContent.includes("Schneider Odace · finition Laiton"), "Choix enregistré dans le chantier");
+  verifier(d.getElementById("bandeau-choix").hidden, "Mode choix terminé");
+  saisir(d.getElementById("recherche"), "ovalis");
+  verifier(d.getElementById("resultats-recherche").textContent.includes("Schneider Ovalis"), "Recherche trouve les gammes");
+  saisir(d.getElementById("recherche"), "");
 
   verifier(erreurs.length === 0, "Aucune erreur JavaScript" + (erreurs.length ? " : " + erreurs.join(" | ") : ""));
   w.close();

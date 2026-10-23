@@ -120,6 +120,8 @@ async function ouvrirChantier(id) {
   majVerdicts();
   afficherDifferentielsChantier();
   afficherPhotos();
+  afficherChecklistChantier();
+  $("resume-appareillage").textContent = resumeAppareillage(chantierOuvert);
   window.scrollTo(0, 0);
 }
 
@@ -269,7 +271,8 @@ $("rapport-chantier").addEventListener("click", () => {
     <p><strong>${echapper(c.nom || "Sans nom")}</strong><br>
       ${c.client ? "Client : " + echapper(c.client) + "<br>" : ""}
       ${c.adresse ? "Adresse : " + echapper(c.adresse) + "<br>" : ""}
-      Date : ${new Date(c.date).toLocaleDateString("fr-FR")}</p>
+      Date : ${new Date(c.date).toLocaleDateString("fr-FR")}
+      ${c.appareillage ? "<br>Appareillage : " + echapper(resumeAppareillage(c)) : ""}</p>
 
     <h2>Mesures</h2>
     <table>
@@ -280,6 +283,9 @@ $("rapport-chantier").addEventListener("click", () => {
         ${ligne("Continuité des conducteurs de protection", c.mesures.continuite, "Ω")}
       </tbody>
     </table>
+
+    <h2>Autocontrôle avant le Consuel</h2>
+    <p>${pointsCoches(c)} / ${TOTAL_POINTS} points vérifiés</p>
 
     <h2>Test des différentiels</h2>
     <ul>${c.differentiels.map((d) => `<li>${d.ok ? "✔" : "✘"} ${echapper(d.nom)}</li>`).join("")}</ul>

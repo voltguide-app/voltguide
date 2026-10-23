@@ -1,52 +1,52 @@
 // =====================================================================
-//  ONGLET CHECK-LIST — autocontrôle avant le Consuel
-//  Les cases cochées sont mémorisées dans le navigateur.
+//  CHECK-LIST CONSUEL — dans chaque chantier
+//  Les cases cochées sont enregistrées avec le chantier.
 // =====================================================================
 
-let cochees = lireMemoire("voltguide-checklist", {});
+const TOTAL_POINTS = R.checklist.reduce((t, g) => t + g.points.length, 0);
+const pointsCoches = (c) => Object.values(c.checklist || {}).filter(Boolean).length;
 
-function afficherChecklist() {
+function afficherChecklistChantier() {
+  const c = chantierOuvert;
+  c.checklist = c.checklist || {};
   const conteneur = $("liste-checklist");
   conteneur.innerHTML = "";
-  let total = 0;
 
   R.checklist.forEach((groupe, g) => {
-    const carte = document.createElement("div");
-    carte.className = "carte";
-    carte.innerHTML = `<h2>${groupe.groupe}</h2>`;
-
+    const bloc = document.createElement("div");
+    bloc.innerHTML = `<h3>${groupe.groupe}</h3>`;
     groupe.points.forEach((texte, p) => {
       const id = `${g}-${p}`;
-      total++;
       const ligne = document.createElement("label");
       ligne.className = "point";
-      ligne.innerHTML = `<input type="checkbox" ${cochees[id] ? "checked" : ""}> <span>${texte}</span>`;
+      ligne.innerHTML = `<input type="checkbox" ${c.checklist[id] ? "checked" : ""}> <span>${texte}</span>`;
       ligne.querySelector("input").addEventListener("change", (e) => {
-        cochees[id] = e.target.checked;
-        ecrireMemoire("voltguide-checklist", cochees);
-        majProgression(total);
+        c.checklist[id] = e.target.checked;
+        sauverBientot();
+        majProgression();
       });
-      carte.appendChild(ligne);
+      bloc.appendChild(ligne);
     });
-    conteneur.appendChild(carte);
+    conteneur.appendChild(bloc);
   });
-  majProgression(total);
+  majProgression();
 }
 
-function majProgression(total) {
-  const faits = Object.values(cochees).filter(Boolean).length;
-  $("progression").textContent =
-    faits === total ? `✅ ${faits} / ${total} : prêt pour le Consuel !` : `${faits} / ${total} points vérifiés`;
-  $("barre-remplie").style.width = `${(faits / total) * 100}%`;
+function majProgression() {
+  const faits = pointsCoches(chantierOuvert);
+  $("progression").textContent = faits === TOTAL_POINTS
+    ? `✅ ${faits} / ${TOTAL_POINTS} : prêt pour le Consuel !`
+    : `${faits} / ${TOTAL_POINTS} points vérifiés`;
+  $("progression-courte").textContent = `${faits}/${TOTAL_POINTS}`;
+  $("barre-remplie").style.width = `${(faits / TOTAL_POINTS) * 100}%`;
 }
 
-$("reset-checklist").addEventListener("click", () => {
-  cochees = {};
-  ecrireMemoire("voltguide-checklist", cochees);
-  afficherChecklist();
-});
-
-afficherChecklist();
+$("reset-checklist").addEventListener("click", (e) =>
+  confirmerAvant(e.currentTarget, "Touche encore pour tout décocher", () => {
+    chantierOuvert.checklist = {};
+    sauverBientot();
+    afficherChecklistChantier();
+  }));
 
 // ---------------------------------------------------------------------
 //  Mode hors-ligne (fonctionne seulement via un serveur, pas en double-clic)
