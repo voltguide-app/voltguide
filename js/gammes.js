@@ -41,7 +41,7 @@ const prixHTML = (n) => `<span class="prix">${"€".repeat(n)}<span class="prix-
 // Texte du lien vers le site officiel (Arnould fait partie du groupe Legrand)
 function texteLien(g) {
   const site = g.marque === "Arnould" ? "Legrand" : g.marque;
-  return g.lienGeneral ? `🔗 Voir le catalogue ${site}` : `🔗 Voir ${g.nom} sur le site ${site}`;
+  return g.texteLien || `🔗 Voir ${g.nom} sur le site ${site}`;
 }
 
 // ---------------------------------------------------------------------

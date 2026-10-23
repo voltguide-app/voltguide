@@ -8,7 +8,7 @@
 //  forme : "carre", "carre-arrondi", "rectangle" ou "ovale" (pour le dessin)
 //  prix  : 1 = entrée de gamme … 4 = luxe (positionnement indicatif)
 //  lien  : page officielle de la gamme chez le fabricant (vérifiée en octobre 2026)
-//  lienGeneral : true quand le fabricant n'a pas de page pour cette gamme (lien vers son catalogue)
+//  texteLien : texte du lien quand ce n'est pas une page de gamme classique
 // =====================================================================
 
 window.GAMMES = [
@@ -101,7 +101,7 @@ window.GAMMES = [
 
   // ----- Arnould (groupe Legrand) -----
   {
-    id: "arnould-espace-evolution", marque: "Arnould", nom: "Espace Evolution", prix: 2, forme: "rectangle", lien: "https://www.legrand.fr/pro/catalogue", lienGeneral: true,
+    id: "arnould-espace-evolution", marque: "Arnould", nom: "Espace Evolution", prix: 2, forme: "rectangle", lien: "https://assets.legrand.com/general/legrand-fr/ar/doc_ac/clip%20it-catalogue_230x300mm_bd.pdf", texteLien: "📄 Voir le catalogue Espace Evolution (PDF Legrand, 2013)",
     description: "Plaques rectangulaires au design épuré, avec un très large choix de décors.",
     points: ["24 blancs décorés", "7 couleurs unies", "12 décors", "Clipsage breveté"],
     finitions: [
