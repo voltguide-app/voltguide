@@ -38,9 +38,10 @@ function apercuPlaque(g, f) {
 
 const prixHTML = (n) => `<span class="prix">${"€".repeat(n)}<span class="prix-vide">${"€".repeat(4 - n)}</span></span>`;
 
-function lienFabricant(g) {
-  const q = `${g.marque} ${g.nom} appareillage` + (g.site ? ` site:${g.site}` : "");
-  return "https://www.google.com/search?q=" + encodeURIComponent(q);
+// Texte du lien vers le site officiel (Arnould fait partie du groupe Legrand)
+function texteLien(g) {
+  const site = g.marque === "Arnould" ? "Legrand" : g.marque;
+  return g.lienGeneral ? `🔗 Voir le catalogue ${site}` : `🔗 Voir ${g.nom} sur le site ${site}`;
 }
 
 // ---------------------------------------------------------------------
@@ -72,7 +73,7 @@ function afficherGammes() {
                 <span style="background:${x.plaque}${x.anneau ? `; box-shadow: inset 0 0 0 4px ${x.anneau}` : ""}"></span></button>`).join("")}
           </div>
           <ul class="regles">${g.points.map((p) => `<li>${p}</li>`).join("")}</ul>
-          <a class="lien-fabricant" href="${lienFabricant(g)}" target="_blank" rel="noopener">🔎 Voir la gamme chez ${g.marque}</a>
+          <a class="lien-fabricant" href="${g.lien}" target="_blank" rel="noopener">${texteLien(g)}</a>
           ${modeChoix ? `<button type="button" class="principal choisir-gamme" data-gamme="${g.id}">✔ Choisir ${g.nom} ${f.nom.toLowerCase()}</button>` : ""}
         </div>
       </article>`;

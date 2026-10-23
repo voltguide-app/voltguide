@@ -237,6 +237,8 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   // Gammes d'appareillage
   clic(d.querySelector('nav button[data-onglet="gammes"]'));
   verifier(d.querySelectorAll("#liste-gammes .gamme").length === 11, "11 gammes affichées");
+  verifier(![...d.querySelectorAll("#liste-gammes a")].some((l) => l.href.includes("google")), "Plus aucun lien vers Google");
+  verifier(d.querySelector("#gamme-schneider-odace .lien-fabricant").href.startsWith("https://www.se.com/fr/fr/product-range/263624668-odace"), "Lien direct vers la page officielle Odace");
   clic(d.querySelector('#filtres-gammes [data-marque="Hager"]'));
   verifier(d.querySelectorAll("#liste-gammes .gamme").length === 2, "Filtre Hager → 2 gammes");
   clic(d.querySelector('#filtres-gammes [data-marque="Toutes"]'));
