@@ -36,12 +36,18 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   const saisir = (el, v) => { el.value = v; el.dispatchEvent(new w.Event("input", { bubbles: true })); };
   const envoyer = (id) => d.getElementById(id).dispatchEvent(new w.Event("submit", { cancelable: true }));
 
-  // Pièces
+  // Barre du bas : plus d'onglet Pièces, l'app s'ouvre sur Calculs
+  verifier(!d.querySelector('nav button[data-onglet="pieces"]') && d.getElementById("calculs").classList.contains("actif"), "Pas d'onglet Pièces, ouverture sur Calculs");
+  verifier(d.querySelectorAll("nav button").length === 5, "5 onglets en bas");
+
+  // Guide pièce par pièce (dans Fiches)
+  verifier(d.getElementById("fiches").contains(d.getElementById("liste-pieces")), "Guide pièce par pièce dans l'onglet Fiches");
   verifier(d.querySelectorAll(".bouton-piece").length === 8, "8 pièces affichées");
   clic(d.querySelector('[data-piece="sejour"]'));
   saisir(d.getElementById("surface"), "30");
   verifier(d.getElementById("resultat-piece").textContent.includes("8"), "Séjour 30 m² → 8 prises");
   verifier(d.querySelector("#detail-piece .source").textContent.includes("7-771"), "Source affichée sur la pièce");
+  verifier(d.getElementById("fiches").classList.contains("actif"), "Toucher une pièce ouvre l'onglet Fiches");
 
   // Générateur de tableau
   clic(d.querySelector('nav button[data-onglet="calculs"]'));

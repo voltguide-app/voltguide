@@ -1,5 +1,5 @@
 // =====================================================================
-//  ONGLET PIÈCES — guide pièce par pièce
+//  GUIDE PIÈCE PAR PIÈCE (en haut de l'onglet Fiches)
 // =====================================================================
 
 R.pieces.forEach((piece) => {
@@ -13,7 +13,7 @@ R.pieces.forEach((piece) => {
 
 function ouvrirPiece(id) {
   const piece = R.pieces.find((p) => p.id === id);
-  allerOnglet("pieces");
+  allerOnglet("fiches");
   document.querySelectorAll(".bouton-piece").forEach((b) => b.classList.toggle("actif", b.dataset.piece === id));
 
   let html = `<div class="carte resultat">
