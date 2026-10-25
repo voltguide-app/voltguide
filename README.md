@@ -19,3 +19,9 @@ L'application fonctionne sur téléphone et ordinateur, même sans réseau une f
 
 VoltGuide est une aide. Elle ne remplace pas la norme NF C 15-100 officielle.
 Les règles marquées « À vérifier » n'ont pas encore été relues par un professionnel.
+
+## © Droits
+
+© 2026 VoltGuide — Tous droits réservés.
+Le code, les textes, les données et le design de VoltGuide ne sont pas libres de droits :
+toute copie ou réutilisation sans autorisation écrite est interdite. Voir le fichier [LICENSE](LICENSE).

@@ -39,6 +39,7 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   // Barre du bas : plus d'onglet Pièces, l'app s'ouvre sur Calculs
   verifier(!d.querySelector('nav button[data-onglet="pieces"]') && d.getElementById("calculs").classList.contains("actif"), "Pas d'onglet Pièces, ouverture sur Calculs");
   verifier(d.querySelectorAll("nav button").length === 5, "5 onglets en bas");
+  verifier(d.querySelector(".avertissement").textContent.includes("Tous droits réservés"), "Mention « Tous droits réservés » affichée");
 
   // Guide pièce par pièce (dans Fiches)
   verifier(d.getElementById("fiches").contains(d.getElementById("liste-pieces")), "Guide pièce par pièce dans l'onglet Fiches");
