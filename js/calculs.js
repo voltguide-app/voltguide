@@ -70,23 +70,29 @@ $("form-section").addEventListener("submit", (e) => {
 // ---------------------------------------------------------------------
 //  Interrupteurs différentiels
 // ---------------------------------------------------------------------
+// Nombre d'interrupteurs différentiels (NF C 15-100 version 2024)
+function nombreDifferentiels(circuits, circuitsA) {
+  const max = R.circuitsMaxParDifferentiel;
+  const typeA = Math.max(1, Math.ceil(circuitsA / max));
+  const placeRestanteA = typeA * max - circuitsA;
+  const autres = Math.max(R.differentiels.minimum - typeA, Math.ceil(Math.max(0, circuits - circuitsA - placeRestanteA) / max));
+  return { typeA, autres };
+}
+
 $("form-differentiels").addEventListener("submit", (e) => {
   e.preventDefault();
-
-  const surface = parseFloat($("d-surface").value);
   const circuits = parseInt($("d-circuits").value, 10);
-  const regle = R.differentiels.find((d) => surface <= d.surfaceMax);
-  const supplementaires = Math.max(0, Math.ceil(circuits / R.circuitsMaxParDifferentiel) - regle.nombre);
+  const circuitsA = Math.min(circuits, parseInt($("d-type-a").value, 10) || 0);
+  const n = nombreDifferentiels(circuits, circuitsA);
 
   $("resultat-differentiels").innerHTML = `
     <div class="carte resultat">
-      <p>Minimum pour ${fr(surface)} m² :</p>
-      <p class="chiffre">${regle.texte}</p>
-      ${supplementaires > 0
-        ? `<p class="info">⚠️ Avec ${circuits} circuits (8 max par différentiel), il faut ajouter
-             <strong>${supplementaires} différentiel(s) 40 A</strong> de plus.</p>`
-        : `<p class="ok">✔ ${circuits} circuits : la répartition à 8 circuits max par différentiel est possible.</p>`}
-      <p>Rappel : la plaque de cuisson et le lave-linge vont sur le différentiel <strong>type A</strong>.</p>
+      <p>Pour ${circuits} circuits :</p>
+      <p class="chiffre">${n.typeA} × type A + ${n.autres} × type AC</p>
+      <p>Soit ${n.typeA + n.autres} interrupteurs différentiels 30 mA (8 circuits max chacun).</p>
+      <p class="info">Calibre de chaque différentiel (règle de l'aval) : 1 × (chauffage + chauffe-eau) + 0,5 × (tous les autres circuits), puis choisir 25, 40 ou 63 A.
+        Exemple : chauffage 20 A + prises 16 A + éclairage 10 A → 33 A → différentiel 40 A.</p>
+      <p>Rappels : lave-linge, sèche-linge et plaque sur le type A (ou F) ; pompe à chaleur ou clim sur un type F ; éclairage et prises répartis sur au moins 2 différentiels.</p>
     </div>`;
 });
 

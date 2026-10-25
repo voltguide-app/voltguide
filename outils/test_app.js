@@ -46,8 +46,10 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   verifier(d.querySelectorAll(".bouton-piece").length === 8, "8 pièces affichées");
   clic(d.querySelector('[data-piece="sejour"]'));
   saisir(d.getElementById("surface"), "30");
-  verifier(d.getElementById("resultat-piece").textContent.includes("8"), "Séjour 30 m² → 8 prises");
-  verifier(d.querySelector("#detail-piece .source").textContent.includes("7-771"), "Source affichée sur la pièce");
+  verifier(/\b7\b/.test(d.getElementById("resultat-piece").textContent) && d.getElementById("resultat-piece").textContent.includes("multimédia"), "Séjour 30 m² → 7 prises + 2 multimédia (règle 2024)");
+  saisir(d.getElementById("surface"), "20");
+  verifier(/\b5\b/.test(d.getElementById("resultat-piece").textContent), "Séjour 20 m² → 5 prises");
+  verifier(d.querySelector("#detail-piece .source").textContent.includes("2024") && d.querySelector("#detail-piece .source").textContent.includes("Vérifié"), "Source 2024 et badge Vérifié sur la pièce");
   verifier(d.getElementById("fiches").classList.contains("actif"), "Toucher une pièce ouvre l'onglet Fiches");
 
   // Générateur de tableau
@@ -57,6 +59,9 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   verifier(res.includes("Différentiel 1") && res.includes("type A"), "Tableau généré avec différentiels");
   const comptes = [...d.querySelectorAll("#resultat-tableau .compteur")].map((c) => c.textContent);
   verifier(comptes.every((c) => parseInt(c) <= 8), "8 circuits max par différentiel : " + comptes.join(", "));
+  verifier(comptes.length >= 2, "Au moins 2 différentiels");
+  const charges = w.eval(`genererTableau(lireFormulaireTableau()).differentiels.map((d) => [d.charge, d.calibre])`);
+  verifier(charges.every(([ch, cal]) => ch <= cal), "Calibre ≥ charge (règle de l'aval) : " + charges.map(([ch, cal]) => ch + "→" + cal + " A").join(", "));
   const diffA = [...d.querySelectorAll(".differentiel")].find((x) => x.textContent.includes("type A"));
   verifier(diffA.textContent.includes("Plaque") && diffA.textContent.includes("Lave-linge"), "Plaque + lave-linge sur le type A");
 
@@ -71,6 +76,14 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   verifier(nbLum >= 7 && nbLum <= 8, `Bureau 24 m² à 500 lux → ${nbLum} dalles`);
   verifier(lux.includes("✔ Minimum du Code du travail"), "Minimum du Code du travail respecté");
 
+  // Différentiels : 14 circuits dont 2 en type A → 1 × A + 1 × AC
+  clic(d.querySelector('[data-calcul="calc-differentiels"]'));
+  envoyer("form-differentiels");
+  verifier(d.getElementById("resultat-differentiels").textContent.includes("1 × type A + 1 × type AC"), "14 circuits dont 2 type A → 1 A + 1 AC");
+  d.getElementById("d-circuits").value = "20";
+  envoyer("form-differentiels");
+  verifier(d.getElementById("resultat-differentiels").textContent.includes("1 × type A + 2 × type AC"), "20 circuits dont 2 type A → 1 A + 2 AC");
+
   // Section de câble
   clic(d.querySelector('[data-calcul="calc-section"]'));
   envoyer("form-section");
@@ -78,7 +91,7 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
 
   // Fiches, schémas, favoris
   clic(d.querySelector('nav button[data-onglet="fiches"]'));
-  verifier(d.querySelectorAll("#liste-fiches details").length === 10, "10 fiches");
+  verifier(d.querySelectorAll("#liste-fiches details").length === 14, "14 fiches");
   verifier(d.querySelectorAll("#liste-schemas details").length === 4, "4 schémas");
   verifier(d.getElementById("fiche-eclairement-lux")?.textContent.includes("120 lux"), "Fiche éclairement");
   clic(d.querySelector('[data-favori="schema:va-et-vient"]'));
@@ -102,6 +115,10 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
   saisir(d.querySelector('[data-champ="nom"]'), "Maison Test");
   saisir(d.querySelector('[data-champ="mesures.terre"]'), "150");
   verifier(d.getElementById("verdict-terre").textContent.includes("Non conforme"), "Terre 150 Ω → non conforme");
+  saisir(d.querySelector('[data-champ="mesures.isolement"]'), "0.7");
+  verifier(d.getElementById("verdict-isolement").textContent.includes("Limite"), "Isolement 0,7 MΩ → limite (entre 0,5 et 1)");
+  saisir(d.querySelector('[data-champ="mesures.isolement"]'), "250");
+  verifier(d.getElementById("verdict-isolement").textContent.includes("Conforme"), "Isolement 250 MΩ → conforme");
   saisir(d.querySelector('[data-champ="mesures.terre"]'), "40");
   verifier(d.getElementById("verdict-terre").textContent.includes("Conforme"), "Terre 40 Ω → conforme");
   if (w.VOLTGUIDE_SANS_IMPRESSION) {
@@ -129,11 +146,12 @@ const verifier = (cond, msg) => { console.log((cond ? "✔ " : "✘ ") + msg); i
     ajouterSymbole("prise-specialisee", 8, 2);
   `);
   let verif = d.getElementById("verif-plan").textContent;
-  verifier(verif.includes("Prises 16 A : 5 sur 8 minimum") && verif.includes("✘"), "Séjour 30 m² avec 5 prises → ✘ 5 sur 8");
+  verifier(verif.includes("Prises 16 A : 5 sur 9 minimum") && verif.includes("✘"), "Séjour 30 m² avec 5 prises → ✘ 5 sur 9 (7 + 2 multimédia)");
+  verifier(verif.includes("Prises RJ45 : 0 sur 2 minimum") && verif.includes("(T2) : 0 sur 3 minimum"), "RJ45 : 2 au séjour, 3 au total pour un T2");
   verifier(verif.includes("sans appareil choisi"), "Prise spécialisée sans appareil signalée");
-  w.eval(`for (let i = 0; i < 3; i++) ajouterSymbole("prise", 2 + i * 0.5, 4);`);
+  w.eval(`for (let i = 0; i < 4; i++) ajouterSymbole("prise", 2 + i * 0.5, 4);`);
   verif = d.getElementById("verif-plan").textContent;
-  verifier(verif.includes("Prises 16 A : 8 sur 8 minimum"), "Séjour avec 8 prises → ✔");
+  verifier(verif.includes("Prises 16 A : 9 sur 9 minimum"), "Séjour avec 9 prises → ✔");
   const avant = w.eval("plan.symboles.length");
   clic(d.getElementById("plan-annuler"));
   verifier(w.eval("plan.symboles.length") === avant - 1, "Le bouton Annuler retire le dernier symbole");

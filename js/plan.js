@@ -332,12 +332,10 @@ function afficherProprietes() {
 // ---------------------------------------------------------------------
 //  Vérification NF C 15-100 (calcul pur, réutilisable et testable)
 // ---------------------------------------------------------------------
-const PRISES_MINI = {
-  sejour: (s) => prisesMinimum("sejour", s),
-  cuisine: (s) => prisesMinimum("cuisine", s),
-  entree: (s) => prisesMinimum("entree", s),
-  chambre: () => 3,
-};
+// Règles NF C 15-100 version 2024 (guide Legrand août 2026)
+const PIECES_PRINCIPALES = ["sejour", "chambre"];
+const LUMIERE_TOUJOURS = ["sejour", "chambre", "cuisine", "sdb", "exterieur"];
+const LUMIERE_SI_PLUS_DE_4M2 = ["entree", "wc", "buanderie"];
 
 function verifierPlan(pl) {
   const compter = (piece, types) =>
@@ -346,18 +344,19 @@ function verifierPlan(pl) {
   const pieces = pl.pieces.map((p) => {
     const surface = p.w * p.h;
     const lignes = [];
-    const mini = PRISES_MINI[p.type]?.(surface) || 0;
+    const mini = prisesMinimum(p.type, surface) + (p.type === "sejour" ? 2 : 0);
     if (mini) {
       const n = compter(p, ["prise"]);
-      lignes.push({ ok: n >= mini, texte: `Prises 16 A : ${n} sur ${mini} minimum` });
+      const detail = p.type === "sejour" ? " (dont 2 pour le multimédia)" : "";
+      lignes.push({ ok: n >= mini, texte: `Prises 16 A : ${n} sur ${mini} minimum${detail}` });
     }
-    if (!["exterieur", "autre"].includes(p.type)) {
+    if (LUMIERE_TOUJOURS.includes(p.type) || (LUMIERE_SI_PLUS_DE_4M2.includes(p.type) && surface > 4)) {
       const n = compter(p, ["lumiere", "applique"]);
-      lignes.push({ ok: n >= 1, texte: `Points lumineux : ${n} sur 1 minimum` });
+      lignes.push({ ok: n >= 1, texte: `Points lumineux (DCL) : ${n} sur 1 minimum` });
     }
-    if (["sejour", "chambre"].includes(p.type)) {
+    if (p.type === "sejour") {
       const n = compter(p, ["rj45"]);
-      lignes.push({ ok: n >= 1, texte: `Prises RJ45 : ${n} sur 1 minimum` });
+      lignes.push({ ok: n >= 2, texte: `Prises RJ45 : ${n} sur 2 minimum (juxtaposées)` });
     }
     if (p.type === "sdb") lignes.push({ ok: null, texte: "Vérifie que les prises sont hors des volumes 0, 1 et 2" });
     if (p.type === "autre") lignes.push({ ok: null, texte: "Choisis le type de pièce pour la vérifier" });
@@ -368,6 +367,15 @@ function verifierPlan(pl) {
     { ok: pl.symboles.some((s) => s.type === "tableau"), texte: "Tableau électrique placé" },
     { ok: pl.symboles.some((s) => s.type === "daaf"), texte: "Au moins 1 détecteur de fumée (obligatoire en logement)" },
   ];
+
+  // RJ45 : total minimum selon le nombre de pièces principales (T1 : 2, T2 : 3, T3 et plus : 4)
+  const principales = pl.pieces.filter((p) => PIECES_PRINCIPALES.includes(p.type)).length;
+  if (principales) {
+    const totalMini = principales === 1 ? 2 : principales === 2 ? 3 : 4;
+    const total = pl.symboles.filter((s) => s.type === "rj45").length;
+    general.push({ ok: total >= totalMini, texte: `Prises RJ45 dans le logement (T${principales}) : ${total} sur ${totalMini} minimum` });
+  }
+
   const sansRepere = pl.symboles.filter((s) => s.type === "prise-specialisee" && (!s.repere || s.repere === "?")).length;
   if (sansRepere) general.push({ ok: false, texte: `${sansRepere} prise(s) spécialisée(s) sans appareil choisi` });
   const dehors = pl.symboles.filter((s) => s.type !== "tableau" && !pieceDe(pl, s)).length;

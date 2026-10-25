@@ -304,6 +304,7 @@ td:first-child { font-weight: 600; }
 
 /* ===== Carnet de chantier ===== */
 .verdict { margin: -8px 0 12px; font-size: .9rem; font-weight: 600; }
+.alerte { color: var(--texte); background: var(--accent-doux); border-radius: 6px; padding: 2px 6px; }
 .ligne-differentiel { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .ligne-differentiel input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--ok); flex-shrink: 0; }
 .ligne-differentiel input[type="text"] { margin: 0; padding: 8px 10px; }

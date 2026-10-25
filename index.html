@@ -159,11 +159,11 @@
       <!-- Différentiels -->
       <div id="calc-differentiels" class="sous-calcul">
         <form id="form-differentiels" class="carte">
-          <label>Surface du logement (m²)
-            <input type="number" id="d-surface" value="80" min="1" required>
-          </label>
-          <label>Nombre de circuits dans le tableau
+          <label>Nombre total de circuits dans le tableau
             <input type="number" id="d-circuits" value="14" min="1" required>
+          </label>
+          <label>Dont lave-linge, sèche-linge, plaque, recharge VE (type A)
+            <input type="number" id="d-type-a" value="2" min="0" required>
           </label>
           <button type="submit">Calculer</button>
         </form>
@@ -269,7 +269,7 @@
           <label>Isolement (MΩ, sous 500 V) <input type="number" step="any" min="0" data-champ="mesures.isolement"></label>
           <p id="verdict-isolement" class="verdict"></p>
           <label>Continuité des conducteurs de protection (Ω) <input type="number" step="any" min="0" data-champ="mesures.continuite"></label>
-          <p class="source">⚠️ Seuils à vérifier avec la norme en vigueur.</p>
+          <p class="source">Terre : ≤ 100 Ω avec un disjoncteur de branchement 500 mA. Isolement sous 500 V : 1 MΩ selon la CEI 60364-6 actuelle, 0,5 MΩ selon les anciennes valeurs encore très citées.</p>
         </div>
 
         <div class="carte">

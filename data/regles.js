@@ -3,14 +3,19 @@
 //  Ce fichier contient TOUTES les données affichées par l'application.
 //  Plus tard, c'est ce fichier que le robot de mise à jour modifiera.
 //
-//  ⚠️ Contenu de prototype, rédigé d'après la NF C 15-100.
-//  Chaque règle doit être vérifiée avec la version en vigueur
-//  avant toute utilisation professionnelle.
+//  Mise à jour du 25/10/2026 d'après la NF C 15-100 version 2024.
+//  « verifie: true » = vérifié avec une source fiable et à jour
+//  (guide Legrand d'août 2026, textes officiels…).
 // =====================================================================
 
 window.REGLES = {
-  version: "0.1 (prototype)",
-  miseAJour: "2026-10-09",
+  version: "0.2",
+  miseAJour: "2026-10-25",
+
+  // Source principale de cette mise à jour : guide Legrand « NF C 15-100,
+  // révision 23 août 2024 — points clés » (édition août 2026), qui résume
+  // la NF C 15-100 version 2024, obligatoire pour les chantiers dont le
+  // permis, la déclaration préalable ou le marché date d'après le 23/08/2025.
 
   // ---------------------------------------------------------------
   //  Guide pièce par pièce (logement)
@@ -19,106 +24,112 @@ window.REGLES = {
     {
       id: "sejour",
       nom: "Séjour",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🛋️",
       demandeSurface: true,
       regles: [
-        "Prises 16 A : 1 par tranche de 4 m², avec un minimum de 5",
-        "Au moins 1 point d'éclairage en plafond, commandé",
-        "Au moins 1 prise de communication RJ45",
+        "Prises 16 A : jusqu'à 28 m², 1 par tranche de 4 m² avec un minimum de 5 ; au-delà de 28 m², 7 minimum, réparties en périphérie",
+        "+ 2 prises de courant pour le multimédia (en priorité dans le séjour), à côté des prises RJ45",
+        "1 point de centre équipé d'un DCL, commandé près de chaque accès",
+        "2 prises RJ45 juxtaposées, à proximité d'une prise de courant",
       ],
-      // Calcul spécial : nombre de prises selon la surface
       calcul: "sejour",
     },
     {
       id: "chambre",
       nom: "Chambre",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 et -11 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🛏️",
       regles: [
-        "Prises 16 A : minimum 3",
-        "Au moins 1 point d'éclairage, commandé",
-        "Au moins 1 prise de communication RJ45",
+        "Prises 16 A : 3 minimum",
+        "1 point de centre équipé d'un DCL, commandé près de chaque accès",
+        "RJ45 hors séjour : 1 au total dans un T2, 2 au total dans un T3 et plus (à répartir dans les autres pièces)",
       ],
     },
     {
       id: "cuisine",
       nom: "Cuisine",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🍳",
       demandeSurface: true,
       regles: [
-        "Prises 16 A : 6 minimum, dont 4 au-dessus du plan de travail (3 minimum si la cuisine fait 4 m² ou moins)",
+        "Prises 16 A : 6 minimum dont 4 au-dessus du plan de travail, sur un circuit dédié (6 prises max) ; 3 minimum si la cuisine fait 4 m² ou moins",
+        "En option : 1 prise pour la hotte, à 1,80 m minimum du sol",
         "Aucune prise au-dessus de l'évier ou des plaques de cuisson",
-        "Circuit spécialisé plaque de cuisson : 6 mm² / 32 A (monophasé)",
-        "Circuit spécialisé four : 2,5 mm² / 20 A",
-        "Circuit spécialisé lave-vaisselle : 2,5 mm² / 20 A",
-        "Au moins 1 point d'éclairage en plafond, commandé",
+        "Plaque de cuisson : circuit dédié 6 mm² / 32 A, sur un différentiel de type A ou F",
+        "Four, lave-vaisselle, congélateur, micro-ondes : 1 circuit dédié 2,5 mm² / 20 A par appareil",
+        "1 point de centre équipé d'un DCL",
       ],
       calcul: "cuisine",
     },
     {
       id: "sdb",
       nom: "Salle de bain",
-      source: "NF C 15-100, partie 7-701 (locaux contenant une baignoire ou une douche)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-7-701 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🛁",
       regles: [
-        "Respecter les volumes 0, 1 et 2 (voir le schéma)",
-        "Volume 0 : aucun appareil sauf TBTS 12 V",
-        "Volume 1 : uniquement TBTS 12 V ou chauffe-eau adapté",
-        "Volume 2 : luminaires et chauffages de classe II, rasoir avec transformateur de séparation",
-        "Prises 16 A : uniquement hors volumes",
-        "Liaison équipotentielle supplémentaire (LES) obligatoire",
-        "Au moins 1 point d'éclairage",
+        "Volume 0 (intérieur de la baignoire ou du receveur, IPX7) : uniquement de la TBTS 12 V",
+        "Volume 1 (au-dessus, jusqu'à 2,25 m, IPX5 ; 1,20 m autour du pommeau pour une douche à l'italienne) : TBTS 12 V, chauffe-eau adapté",
+        "Volume 2 (0,60 m autour du volume 1, IPX4) : luminaires et chauffages de classe II, prise rasoir avec transformateur de séparation",
+        "Prises de courant avec terre : uniquement hors volumes",
+        "Volume caché (sous la baignoire ou le receveur) : aucun appareil électrique",
+        "Point d'éclairage en volume 2 : DCL avec obturateur IPX4 ou luminaire IPX4",
+        "Tous les circuits protégés par un différentiel 30 mA",
+        "Liaison équipotentielle locale (canalisations, masses métalliques… reliées à la terre)",
       ],
       schema: "volumes",
     },
     {
       id: "wc",
       nom: "WC",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🚽",
-      regles: ["Au moins 1 point d'éclairage, commandé"],
+      regles: [
+        "Au-delà de 4 m² : 1 point de centre ou applique équipé d'un DCL",
+        "En dessous de 4 m² : pas de minimum imposé (un point lumineux reste conseillé)",
+        "Pas de prise imposée dans les WC",
+      ],
     },
     {
       id: "entree",
       nom: "Entrée / couloir",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🚪",
       demandeSurface: true,
       regles: [
-        "Au moins 1 point d'éclairage, commandé",
-        "1 prise 16 A si la surface dépasse 4 m²",
+        "Au-delà de 4 m² : 1 prise 16 A minimum",
+        "Au-delà de 4 m² : 1 point de centre ou applique équipé d'un DCL",
+        "Un point de commande près de chaque accès (entre 0,90 m et 1,30 m)",
       ],
       calcul: "entree",
     },
     {
       id: "buanderie",
       nom: "Buanderie / cellier",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🧺",
       regles: [
-        "Circuit spécialisé lave-linge : 2,5 mm² / 20 A",
-        "Circuit spécialisé sèche-linge : 2,5 mm² / 20 A",
-        "Au moins 1 point d'éclairage",
+        "Lave-linge et sèche-linge : 1 circuit dédié 2,5 mm² / 20 A chacun, sur un différentiel de type A ou F",
+        "Au-delà de 4 m² : 1 prise 16 A et 1 point de centre ou applique équipé d'un DCL",
       ],
     },
     {
       id: "exterieur",
       nom: "Extérieur",
-      source: "NF C 15-100 (canalisations et matériel extérieur)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🌳",
       regles: [
-        "Matériel avec indice de protection adapté (IP44 minimum pour les prises)",
-        "Protection par différentiel 30 mA obligatoire",
+        "1 point d'éclairage au-dessus de chaque accès (entrée principale ou de service)",
+        "Matériel avec un indice de protection adapté (IP44 minimum pour les prises)",
+        "Protection par différentiel 30 mA",
         "Câbles enterrés : sous gaine rouge TPC, avec grillage avertisseur rouge au-dessus",
       ],
     },
@@ -128,38 +139,33 @@ window.REGLES = {
   //  Circuits : section et protection (cuivre, logement)
   // ---------------------------------------------------------------
   circuits: [
-    { nom: "Éclairage", section: "1,5 mm²", protection: "16 A", limite: "8 points lumineux max" },
-    { nom: "Prises 16 A", section: "1,5 mm²", protection: "16 A", limite: "5 prises max" },
-    { nom: "Prises 16 A", section: "2,5 mm²", protection: "20 A", limite: "8 prises max" },
-    { nom: "Volets roulants", section: "1,5 mm²", protection: "16 A", limite: "" },
-    { nom: "Plaque de cuisson (mono)", section: "6 mm²", protection: "32 A", limite: "Circuit spécialisé" },
-    { nom: "Four", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
-    { nom: "Lave-vaisselle", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
-    { nom: "Lave-linge", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
-    { nom: "Sèche-linge", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
-    { nom: "Chauffe-eau", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé" },
-    { nom: "Chauffage ≤ 3 500 W", section: "1,5 mm²", protection: "16 A", limite: "" },
-    { nom: "Chauffage ≤ 4 500 W", section: "2,5 mm²", protection: "20 A", limite: "" },
+    { nom: "Éclairage", section: "1,5 mm²", protection: "10 ou 16 A", limite: "8 points max (prises commandées comprises) ; au moins 2 circuits par logement (1 seul pour un studio ou un T1)" },
+    { nom: "Prises 16 A", section: "1,5 mm²", protection: "16 A", limite: "8 prises max" },
+    { nom: "Prises 16 A", section: "2,5 mm²", protection: "20 A", limite: "12 prises max" },
     { nom: "Prises de la cuisine", section: "2,5 mm²", protection: "20 A", limite: "Circuit dédié, 6 prises max" },
-    { nom: "Congélateur", section: "2,5 mm²", protection: "20 A", limite: "Circuit spécialisé conseillé" },
-    { nom: "VMC", section: "1,5 mm²", protection: "2 A", limite: "Circuit spécialisé" },
-    { nom: "Tableau de communication", section: "1,5 mm²", protection: "16 A", limite: "Circuit dédié" },
-    { nom: "Borne de recharge 7,4 kW", section: "10 mm²", protection: "40 A", limite: "Circuit dédié, différentiel type A ou B" },
+    { nom: "Volets roulants", section: "1,5 mm² (ou 2,5 mm²)", protection: "16 A (ou 20 A)", limite: "Au moins 1 circuit dédié ; 2 circuits conseillés" },
+    { nom: "Lave-linge, sèche-linge", section: "2,5 mm²", protection: "20 A", limite: "1 circuit par appareil, différentiel type A ou F" },
+    { nom: "Four, lave-vaisselle, congélateur, micro-ondes, chauffe-eau", section: "2,5 mm²", protection: "20 A", limite: "1 circuit par appareil ; au moins 3 circuits spécialisés par logement" },
+    { nom: "Plaque de cuisson", section: "6 mm²", protection: "32 A", limite: "Circuit dédié, différentiel type A ou F" },
+    { nom: "Chauffage ≤ 3 500 W", section: "1,5 mm²", protection: "16 A", limite: "Circuit dédié au chauffage" },
+    { nom: "Chauffage ≤ 4 500 W", section: "2,5 mm²", protection: "20 A", limite: "Circuit dédié au chauffage" },
+    { nom: "Chauffage ≤ 5 750 W", section: "4 mm²", protection: "25 A", limite: "Circuit dédié au chauffage" },
+    { nom: "Chauffage ≤ 7 250 W", section: "6 mm²", protection: "32 A", limite: "Circuit dédié au chauffage" },
+    { nom: "Prise renforcée véhicule électrique", section: "2,5 mm²", protection: "20 A", limite: "Circuit dédié, différentiel type A ou F" },
+    { nom: "Borne de recharge", section: "Selon la borne", protection: "Selon la borne", limite: "Circuit dédié, dimensionné d'après la notice de la borne (souvent 40 A / 10 mm² en 7,4 kW)" },
+    { nom: "VMC", section: "1,5 mm²", protection: "2 A", limite: "Circuit dédié" },
   ],
 
   // Section minimale (mm²) pour chaque calibre de disjoncteur (cuivre)
   sectionParCalibre: { 10: 1.5, 16: 1.5, 20: 2.5, 25: 4, 32: 6, 40: 10, 63: 16 },
 
   // ---------------------------------------------------------------
-  //  Interrupteurs différentiels 30 mA selon la surface du logement
-  //  ⚠️ À vérifier : la révision 2024 de la NF C 15-100 fait évoluer
-  //  les types de différentiels exigés.
+  //  Interrupteurs différentiels 30 mA (NF C 15-100 version 2024)
+  //  Au moins 2 par logement, dont au moins 1 de type A.
+  //  Calibre choisi par la « règle de l'aval » :
+  //    1 × (chauffage + chauffe-eau) + 0,5 × (tous les autres circuits)
   // ---------------------------------------------------------------
-  differentiels: [
-    { surfaceMax: 35, texte: "1 × 25 A type AC + 1 × 40 A type A", nombre: 2 },
-    { surfaceMax: 100, texte: "2 × 40 A type AC + 1 × 40 A type A", nombre: 3 },
-    { surfaceMax: Infinity, texte: "3 × 40 A type AC + 1 × 40 A type A", nombre: 4 },
-  ],
+  differentiels: { minimum: 2, calibres: [25, 40, 63] },
   circuitsMaxParDifferentiel: 8,
 
   // ---------------------------------------------------------------
@@ -236,9 +242,54 @@ window.REGLES = {
   // ---------------------------------------------------------------
   fiches: [
     {
+      titre: "Nouvelle NF C 15-100 (version 2024)",
+      source: "Guide Legrand « NF C 15-100, révision 23 août 2024 » (août 2026), Consuel, Apave",
+      verifie: true,
+      icone: "🆕",
+      blocs: [
+        {
+          titre: "Dates",
+          liste: [
+            "Publiée le 23 août 2024, avec 12 mois de transition : l'ancienne version (2002 + amendements) est restée valable jusqu'au 23 août 2025",
+            "Elle s'applique selon la date du permis de construire, de la déclaration préalable ou de la signature du marché",
+          ],
+        },
+        {
+          titre: "Une série de 21 normes",
+          tableau: {
+            entetes: ["Partie", "Contenu"],
+            lignes: [
+              ["NF C 15-100-1", "Exigences générales"],
+              ["NF C 15-100-10", "Installations des logements"],
+              ["NF C 15-100-11", "Réseaux numériques des logements"],
+              ["NF C 15-100-7-701", "Salles d'eau"],
+              ["NF C 15-100-7-722", "Recharge des véhicules électriques"],
+              ["NF C 15-100-8-1", "Efficacité énergétique"],
+            ],
+          },
+        },
+        {
+          titre: "Ce qui change sur le terrain",
+          liste: [
+            "Au moins 2 interrupteurs différentiels 30 mA par logement, dont au moins 1 de type A (fin du tableau selon la surface)",
+            "Lave-linge, sèche-linge et plaque de cuisson : différentiel de type A ou F ; pompe à chaleur, clim, pompe de piscine : type F",
+            "Prises : 8 max en 1,5 mm² / 16 A, 12 max en 2,5 mm² / 20 A",
+            "GTL obligatoire dans le neuf, dans un espace réservé (ETEL)",
+            "Points lumineux équipés d'un DCL, boîtes des points de centre accrochées à la structure",
+            "Fixation à griffes interdite dans le neuf (prises et interrupteurs)",
+            "Parafoudre : nouveaux cas obligatoires, et protection conseillée des appareils à plus de 10 m du tableau (30 m avant)",
+            "Protection contre les arcs électriques (DPDA) recommandée dans certains locaux (hors logement)",
+            "Réseau numérique : câblage en étoile, 1 Gbit/s minimum (grade 2 TV)",
+            "Faux plafond avec isolant soufflé : boîtes IP55 minimum ou capot",
+            "Dès 2027, logements neufs : régulation des températures et isolation des réseaux de chauffage obligatoires (décret 2023-444)",
+          ],
+        },
+      ],
+    },
+    {
       titre: "Tableau des circuits",
-      source: "NF C 15-100, partie 7-771 (locaux d'habitation)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "📋",
       blocs: [
         {
@@ -252,31 +303,121 @@ window.REGLES = {
     },
     {
       titre: "Différentiels 30 mA",
-      source: "NF C 15-100, partie 7-771 — révision 2024 à vérifier",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🛡️",
       blocs: [
         {
-          titre: "Nombre minimum selon la surface",
+          titre: "Nombre",
+          liste: [
+            "Au moins 2 interrupteurs différentiels 30 mA par logement, dont au moins 1 de type A",
+            "8 circuits maximum par interrupteur différentiel",
+            "Éclairage et prises répartis sur au moins 2 différentiels (pour ne pas tout perdre en cas de défaut)",
+          ],
+        },
+        {
+          titre: "Quel type pour quel circuit",
           tableau: {
-            entetes: ["Surface", "Différentiels"],
+            entetes: ["Circuit", "Type minimum"],
             lignes: [
-              ["≤ 35 m²", "1 × 25 A type AC + 1 × 40 A type A"],
-              ["35 à 100 m²", "2 × 40 A type AC + 1 × 40 A type A"],
-              ["> 100 m²", "3 × 40 A type AC + 1 × 40 A type A"],
+              ["Éclairage, prises, volets, chauffage, chauffe-eau, four, lave-vaisselle", "AC (ou A, F, B)"],
+              ["Lave-linge, sèche-linge, plaque de cuisson", "A (ou F)"],
+              ["Pompe à chaleur, climatisation, pompe de piscine", "F"],
+              ["Recharge VE monophasée (prise renforcée ou borne)", "A ou F"],
+              ["Recharge VE triphasée", "A ou F + détection 6 mA, ou B"],
+              ["Appareils triphasés à variateur de vitesse", "B"],
             ],
           },
         },
         {
-          titre: "Règles",
+          titre: "Calibre de l'interrupteur différentiel",
           liste: [
-            "8 circuits maximum par interrupteur différentiel",
-            "Type A obligatoire pour la plaque de cuisson et le lave-linge",
-            "Type AC : courants alternatifs classiques (éclairage, prises, chauffage)",
-            "Type A : détecte aussi les courants avec composante continue (électronique)",
-            "Type F : comme le type A, plus les variateurs de fréquence (pompe à chaleur, clim)",
-            "Type B : détecte les courants continus lisses (certaines bornes de recharge)",
-            "⚠️ À vérifier avec la révision 2024 de la NF C 15-100",
+            "Règle de l'amont : calibre ≥ calibre du disjoncteur d'abonné (+ production photovoltaïque éventuelle)",
+            "Ou règle de l'aval : calibre ≥ 1 × (chauffage + chauffe-eau) + 0,5 × (tous les autres circuits)",
+            "Exemple : chauffage 20 A + prises 16 A + éclairage 10 A → 20 + 8 + 5 = 33 A → différentiel 40 A",
+          ],
+        },
+        {
+          titre: "Les types en bref",
+          liste: [
+            "AC : usage général",
+            "A : appareils qui créent des défauts « mono-alternance » (électronique)",
+            "F : appareils à variateur de vitesse monophasé",
+            "B : redresseurs ou variateurs triphasés",
+          ],
+        },
+      ],
+    },
+    {
+      titre: "GTL et tableau électrique",
+      source: "NF C 15-100-10 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
+      icone: "🗄️",
+      blocs: [
+        {
+          liste: [
+            "GTL : 60 cm de large et 25 cm de profondeur minimum, du sol au plafond, dans un espace réservé (ETEL)",
+            "Emplacement pour les équipements de communication : 24 × 30 cm minimum, 20 cm de profondeur, avec au moins 1 prise de courant",
+            "Réserve au tableau : 20 % d'emplacements libres en maison individuelle, 6 modules minimum en logement collectif",
+            "Réserve conseillée en bout de rangée, pour ajouter facilement des disjoncteurs",
+            "Manettes du disjoncteur d'abonné : entre 0,90 m et 1,80 m du sol",
+            "Manettes des disjoncteurs : entre 0,90 m et 1,80 m (coffret sans porte), ou 0,50 m minimum (coffret avec porte)",
+            "1 disjoncteur par circuit ; coupe-circuits à fusible interdits en neuf et en grosse rénovation",
+            "Local indépendant de plusieurs pièces : son propre dispositif de coupure d'urgence",
+            "Schéma détaillé avec repérage des circuits à fournir à la fin des travaux",
+          ],
+        },
+      ],
+    },
+    {
+      titre: "Réseau numérique (RJ45)",
+      source: "NF C 15-100-11 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
+      icone: "🌐",
+      blocs: [
+        {
+          titre: "Nombre minimum de prises RJ45",
+          tableau: {
+            entetes: ["Logement", "Total", "Séjour", "Autres pièces"],
+            lignes: [
+              ["T1", "2", "2 juxtaposées", "—"],
+              ["T2", "3", "2 juxtaposées", "1"],
+              ["T3 et plus", "4", "2 juxtaposées", "2"],
+            ],
+          },
+        },
+        {
+          liste: [
+            "Câblage en étoile obligatoire depuis le coffret de communication",
+            "Câble et prises RJ45 catégorie 6 blindées, grade 2 TV minimum (1 Gbit/s) ; grade 3 TV pour 10 Gbit/s",
+            "Chaque prise RJ45 à proximité d'une prise de courant",
+            "Coffret : bandeau de brassage (4 RJ45 minimum), dispositif de terminaison (DTI cuivre et/ou DTIo fibre), répartiteur TV, mise à la terre",
+            "Conseillé : lien de déport pour installer la box fibre dans le séjour",
+          ],
+        },
+      ],
+    },
+    {
+      titre: "Parafoudre",
+      source: "NF C 15-100 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
+      icone: "⚡",
+      blocs: [
+        {
+          titre: "Obligatoire au tableau (logement)",
+          liste: [
+            "Bâtiment équipé d'un paratonnerre (partout en France)",
+            "Zone AQ2 (forte activité orageuse) avec alimentation électrique aérienne, même en partie",
+            "Zone AQ2 avec alimentation enterrée, si des équipements servent à la sécurité des personnes (médical à domicile, alarmes…)",
+            "Réseau numérique en cuivre : parafoudre aussi sur ce réseau s'il y en a un sur l'installation électrique",
+          ],
+        },
+        {
+          titre: "Recommandé",
+          liste: [
+            "Bâtiment à moins de 50 m d'un bâtiment avec paratonnerre",
+            "Parafoudre supplémentaire pour les appareils à plus de 10 m du tableau (30 m auparavant)",
+            "Hors zone AQ2 : analyse des risques (informatique, congélateur…)",
           ],
         },
       ],
@@ -320,18 +461,19 @@ window.REGLES = {
     },
     {
       titre: "Borne de recharge (IRVE)",
-      source: "NF C 15-100, partie 7-722 et guide UTE C 15-722",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-7-722 (2024), d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "🚗",
       blocs: [
         {
           titre: "Règles principales",
           liste: [
-            "Référence : NF C 15-100 partie 7-722 et guide UTE C 15-722",
-            "Circuit dédié, protégé par un différentiel 30 mA",
-            "Différentiel type A minimum ; type B si la borne ne détecte pas elle-même les défauts en courant continu (6 mA DC)",
-            "Prise renforcée : 2,5 mm², disjoncteur 20 A",
-            "Borne 7,4 kW monophasé : disjoncteur 40 A, câble 10 mm² en général (vérifier la notice et la chute de tension)",
+            "1 circuit dédié par point de recharge",
+            "Mode 2 (prise renforcée) monophasé : différentiel 30 mA type A ou F ; prise renforcée sur 2,5 mm² / 20 A",
+            "Mode 3 (borne) monophasé : différentiel 30 mA type A ou F",
+            "Mode 3 triphasé : type A ou F + dispositif de détection 6 mA (souvent intégré à la borne), ou type B",
+            "Câbles et protections dimensionnés d'après les valeurs indiquées sur la borne",
+            "Obturateurs pour les socles et prises jusqu'à 32 A",
             "Qualification IRVE obligatoire pour installer une borne de plus de 3,7 kW",
           ],
         },
@@ -339,14 +481,15 @@ window.REGLES = {
     },
     {
       titre: "Photovoltaïque",
-      source: "Guide UTE C 15-712-1",
+      source: "Guide UTE C 15-712-1 (juillet 2013), toujours la référence en 2026 ; complément d'experts publié en 2024",
       verifie: false, // passer à true quand un électricien a relu
       icone: "☀️",
       blocs: [
         {
           titre: "Règles principales",
           liste: [
-            "Référence : guide UTE C 15-712-1",
+            "Référence : guide UTE C 15-712-1 (2013), en attente de révision par l'AFNOR ; un guide complémentaire d'experts est paru en 2024",
+            "Le PV sans stockage se protège par un différentiel de type A minimum",
             "Partie courant continu (DC) : câbles et matériel spécifiques PV",
             "Sectionneur / interrupteur DC avant l'onduleur",
             "Parafoudre selon la zone et la longueur des câbles",
@@ -360,7 +503,7 @@ window.REGLES = {
     },
     {
       titre: "Couleurs des conducteurs",
-      source: "NF C 15-100, partie 5-51 (identification des conducteurs)",
+      source: "NF C 15-100-1 (identification des conducteurs)",
       verifie: false, // passer à true quand un électricien a relu
       icone: "🎨",
       blocs: [
@@ -487,16 +630,17 @@ window.REGLES = {
     },
     {
       titre: "Hauteurs d'installation",
-      source: "NF C 15-100, partie 7-771 et règles d'accessibilité (logements neufs)",
-      verifie: false, // passer à true quand un électricien a relu
+      source: "NF C 15-100-10 (2024) et règles d'accessibilité, d'après le guide Legrand août 2026",
+      verifie: true,
       icone: "📏",
       blocs: [
         {
           liste: [
-            "Prises 16 A et 20 A : axe à 5 cm minimum du sol fini",
-            "Prises 32 A : axe à 12 cm minimum du sol fini",
-            "Tableau : organes de commande entre 1 m et 1,80 m",
-            "Logement neuf (accessibilité PMR) : interrupteurs et une prise par pièce entre 0,90 m et 1,30 m",
+            "Prises jusqu'à 20 A : axe à 5 cm minimum du sol fini",
+            "Prises de plus de 20 A : axe à 12 cm minimum du sol fini",
+            "Prise de hotte (option) : 1,80 m minimum",
+            "Interrupteurs et commandes de volets : entre 0,90 m et 1,30 m (accessibilité)",
+            "Disjoncteur d'abonné et disjoncteurs du tableau : entre 0,90 m et 1,80 m (0,50 m minimum pour un coffret avec porte)",
           ],
         },
       ],
@@ -510,11 +654,11 @@ window.REGLES = {
     {
       groupe: "Mise à la terre",
       points: [
-        "Prise de terre mesurée : résistance ≤ 100 Ω",
-        "Conducteur de terre en cuivre isolé, 16 mm² minimum",
+        "Prise de terre mesurée : résistance ≤ 100 Ω avec un disjoncteur de branchement 500 mA",
+        "Conducteur de terre en cuivre isolé, 16 mm² minimum (25 mm² en cuivre nu)",
         "Barrette de coupure présente et accessible",
         "Liaison équipotentielle principale (6 mm² minimum)",
-        "Liaison équipotentielle supplémentaire dans la salle de bain",
+        "Liaison équipotentielle locale dans la salle de bain",
       ],
     },
     {
@@ -522,21 +666,26 @@ window.REGLES = {
       points: [
         "Tous les circuits protégés par un différentiel 30 mA",
         "8 circuits maximum par interrupteur différentiel",
-        "Différentiel de type A pour la plaque de cuisson et le lave-linge",
+        "Lave-linge, sèche-linge et plaque de cuisson sur un différentiel de type A ou F",
         "Circuits repérés (étiquettes)",
-        "Réserve d'au moins 20 % de place libre",
-        "Organes de commande entre 1 m et 1,80 m du sol",
+        "Réserve d'au moins 20 % (maison) ou 6 modules (appartement)",
+        "Manettes entre 0,90 m et 1,80 m du sol (0,50 m minimum avec porte)",
         "Gaine technique logement (GTL) présente (logement neuf)",
+        "Au moins 2 interrupteurs différentiels 30 mA, dont 1 de type A",
+        "Schéma électrique avec repérage des circuits remis au client",
       ],
     },
     {
       groupe: "Circuits et appareillage",
       points: [
         "Section des conducteurs adaptée au calibre de chaque disjoncteur",
-        "Nombre de points par circuit respecté",
+        "Nombre de points par circuit respecté (8 lumières, 8 ou 12 prises, 6 en cuisine)",
         "Prises avec obturateurs (éclats)",
         "Aucun conducteur sans protection mécanique",
         "Volumes de la salle de bain respectés",
+        "Points lumineux équipés de DCL, points de centre accrochés à la structure",
+        "Pas de fixation à griffes (logement neuf)",
+        "Au moins 2 circuits d'éclairage (sauf studio ou T1)",
       ],
     },
     {

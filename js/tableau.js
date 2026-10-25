@@ -11,7 +11,8 @@ const METRES_PAR_POINT = 4; // longueur moyenne ajoutée par prise ou point lumi
 // Fabrique un circuit
 const circuit = (nom, section, calibre, options = {}) => ({
   nom, section, calibre,
-  typeA: false,     // doit être sur un différentiel de type A
+  typeA: false,     // doit être sur un différentiel de type A (ou F)
+  plein: false,     // compte à 100 % dans la règle de l'aval (chauffage, chauffe-eau)
   points: 0,        // nombre de prises ou points lumineux
   ...options,
 });
@@ -29,18 +30,20 @@ function repartir(total, max) {
 function genererTableau(p) {
   const circuits = [];
 
-  // --- Éclairage : 8 points max par circuit
+  // --- Éclairage : 8 points max par circuit, au moins 2 circuits (sauf studio / T1)
   const pointsLumineux = 1 /* séjour */ + p.chambres + 1 /* cuisine */ + p.sdb + p.wc + 1 /* entrée */ + (p.exterieur ? 1 : 0);
-  repartir(pointsLumineux, 8).forEach((n, i) =>
+  let paquetsLumiere = repartir(pointsLumineux, 8);
+  if (paquetsLumiere.length < 2 && p.chambres > 0) paquetsLumiere = repartir(pointsLumineux, Math.ceil(pointsLumineux / 2));
+  paquetsLumiere.forEach((n, i) =>
     circuits.push(circuit(`Éclairage ${i + 1}`, 1.5, 16, { points: n })));
 
-  // --- Prises des pièces (hors cuisine) : 8 max par circuit en 2,5 mm²
+  // --- Prises des pièces (hors cuisine) : 12 max par circuit en 2,5 mm² / 20 A
   const prises =
-    prisesMinimum("sejour", p.surfaceSejour) +
+    prisesMinimum("sejour", p.surfaceSejour) + 2 /* multimédia */ +
     3 * p.chambres +
     prisesMinimum("entree", p.surfaceEntree) +
-    p.sdb; // 1 prise hors volumes par salle de bain
-  repartir(prises, 8).forEach((n, i) =>
+    p.sdb; // 1 prise hors volumes par salle de bain (conseillé)
+  repartir(prises, 12).forEach((n, i) =>
     circuits.push(circuit(`Prises ${i + 1}`, 2.5, 20, { points: n })));
 
   // --- Prises de la cuisine : circuit dédié, 6 max
@@ -52,9 +55,9 @@ function genererTableau(p) {
   if (p.four) circuits.push(circuit("Four", 2.5, 20));
   if (p.laveVaisselle) circuits.push(circuit("Lave-vaisselle", 2.5, 20));
   if (p.laveLinge) circuits.push(circuit("Lave-linge", 2.5, 20, { typeA: true }));
-  if (p.secheLinge) circuits.push(circuit("Sèche-linge", 2.5, 20));
+  if (p.secheLinge) circuits.push(circuit("Sèche-linge", 2.5, 20, { typeA: true }));
   if (p.congelateur) circuits.push(circuit("Congélateur", 2.5, 20));
-  if (p.chauffeEau) circuits.push(circuit("Chauffe-eau (via contacteur HC)", 2.5, 20));
+  if (p.chauffeEau) circuits.push(circuit("Chauffe-eau (via contacteur HC)", 2.5, 20, { plein: true }));
   if (p.vmc) circuits.push(circuit("VMC", 1.5, 2));
   if (p.volets) circuits.push(circuit("Volets roulants", 1.5, 16));
   if (p.exterieur) circuits.push(circuit("Prises extérieures", 2.5, 20, { points: 2 }));
@@ -62,15 +65,15 @@ function genererTableau(p) {
   // --- Chauffage électrique : circuits de 4 500 W max en 2,5 mm² / 20 A
   if (p.chauffage > 0) {
     const n = Math.ceil(p.chauffage / 4500);
-    for (let i = 0; i < n; i++) circuits.push(circuit(`Chauffage ${i + 1}`, 2.5, 20));
+    for (let i = 0; i < n; i++) circuits.push(circuit(`Chauffage ${i + 1}`, 2.5, 20, { plein: true }));
   }
 
   // --- Véhicule électrique
   if (p.vehicule === "prise") circuits.push(circuit("Prise renforcée véhicule", 2.5, 20, { typeA: true }));
   if (p.vehicule === "borne") circuits.push(circuit("Borne de recharge 7,4 kW", 10, 40, { typeA: true }));
 
-  // --- Tableau de communication : toujours
-  circuits.push(circuit("Tableau de communication", 1.5, 16));
+  // --- Coffret de communication : circuit conseillé (la norme demande au moins 1 prise à côté)
+  circuits.push(circuit("Coffret de communication (conseillé)", 1.5, 16));
 
   // --- Longueur de câble estimée pour chaque circuit
   circuits.forEach((c) => (c.longueur = p.distance + c.points * METRES_PAR_POINT));
@@ -83,36 +86,13 @@ function genererTableau(p) {
 // p : { surface (m²), chauffeEau (true/false) }
 function completerTableau(circuits, p) {
   // -------------------------------------------------------------------
-  //  Interrupteurs différentiels
+  //  Interrupteurs différentiels (NF C 15-100 version 2024)
+  //  - au moins 2 par logement, dont au moins 1 de type A
+  //  - 8 circuits maximum chacun
+  //  - lave-linge, sèche-linge, plaque, recharge VE sur un type A
+  //  - calibre par la règle de l'aval : 1 × (chauffage + chauffe-eau) + 0,5 × le reste
   // -------------------------------------------------------------------
-  const max = R.circuitsMaxParDifferentiel;
-  const regle = R.differentiels.find((d) => p.surface <= d.surfaceMax);
-  const circuitsA = circuits.filter((c) => c.typeA);
-  const circuitsAC = circuits.filter((c) => !c.typeA);
-
-  // Le tableau de la norme : 1 type A + (nombre - 1) type AC
-  const nbA = Math.max(1, Math.ceil(circuitsA.length / max));
-  let nbAC = regle.nombre - 1;
-  // Ajoute des différentiels AC si 8 circuits max ne suffit pas
-  while (nbAC * max + (nbA * max - circuitsA.length) < circuitsAC.length) nbAC++;
-
-  const calibreAC = p.surface <= 35 ? 25 : 40;
-  const differentiels = [
-    ...Array.from({ length: nbA }, () => ({ type: "A", calibre: 40, circuits: [] })),
-    ...Array.from({ length: nbAC }, (_, i) => ({ type: "AC", calibre: i === 0 ? calibreAC : 40, circuits: [] })),
-  ];
-
-  // Circuits de type A sur les différentiels A
-  circuitsA.forEach((c, i) => differentiels[i % nbA].circuits.push(c));
-
-  // Autres circuits répartis à tour de rôle (les éclairages sont ainsi sur des différentiels différents)
-  const avecPlace = () => differentiels.filter((d) => d.circuits.length < max);
-  let tour = 0;
-  circuitsAC.forEach((c) => {
-    const ac = avecPlace().filter((d) => d.type === "AC");
-    const choix = ac.length ? ac : avecPlace(); // si les AC sont pleins, on complète les A
-    choix[tour++ % choix.length].circuits.push(c);
-  });
+  const differentiels = repartirSurDifferentiels(circuits);
 
   // -------------------------------------------------------------------
   //  Coffret : 1 module par disjoncteur, 2 par différentiel, + 20 % de réserve
@@ -132,6 +112,43 @@ function completerTableau(circuits, p) {
   Object.keys(cables).forEach((s) => (cables[s] = Math.ceil((cables[s] * 1.1) / 10) * 10)); // +10 %, arrondi à 10 m
 
   return { circuits, differentiels, modulesUtilises, modulesAvecReserve, rangees, disjoncteurs, inter, cables };
+}
+
+// Charge d'un différentiel selon la règle de l'aval (en ampères)
+const chargeAval = (liste) => liste.reduce((t, c) => t + (c.plein ? 1 : 0.5) * c.calibre, 0);
+
+function repartirSurDifferentiels(circuits) {
+  const max = R.circuitsMaxParDifferentiel;
+  const calibres = R.differentiels.calibres;
+  const circuitsA = circuits.filter((c) => c.typeA);
+  const circuitsAC = circuits.filter((c) => !c.typeA);
+  const nbA = Math.max(1, Math.ceil(circuitsA.length / max));
+  let nbAC = Math.max(R.differentiels.minimum - nbA, Math.ceil(Math.max(0, circuitsAC.length - (nbA * max - circuitsA.length)) / max));
+
+  // On place les plus gros circuits d'abord, chacun sur le différentiel le moins chargé
+  const placer = (liste, cibles, tous) => {
+    [...liste].sort((a, b) => (b.plein ? 1 : 0.5) * b.calibre - (a.plein ? 1 : 0.5) * a.calibre).forEach((c) => {
+      let possibles = cibles.filter((d) => d.circuits.length < max);
+      if (!possibles.length) possibles = tous.filter((d) => d.circuits.length < max);
+      possibles.sort((a, b) => chargeAval(a.circuits) - chargeAval(b.circuits) || a.circuits.length - b.circuits.length)[0].circuits.push(c);
+    });
+  };
+
+  // Si un différentiel dépasse 63 A, on en ajoute un et on recommence
+  for (let essai = 0; essai < 10; essai++) {
+    const ids = [
+      ...Array.from({ length: nbA }, () => ({ type: "A", circuits: [] })),
+      ...Array.from({ length: nbAC }, () => ({ type: "AC", circuits: [] })),
+    ];
+    placer(circuitsA, ids.filter((d) => d.type === "A"), ids);
+    placer(circuitsAC, ids.filter((d) => d.type === "AC"), ids);
+    ids.forEach((d) => {
+      d.charge = chargeAval(d.circuits);
+      d.calibre = calibres.find((c) => c >= d.charge) || calibres[calibres.length - 1];
+    });
+    if (ids.every((d) => d.charge <= calibres[calibres.length - 1])) return ids;
+    nbAC++;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -164,7 +181,7 @@ $("form-tableau").addEventListener("submit", (e) => {
 
   const carteDifferentiel = (d, i) => `
     <div class="carte differentiel">
-      <h3>Différentiel ${i + 1} : 30 mA ${d.calibre} A type ${d.type}
+      <h3>Différentiel ${i + 1} : 30 mA ${d.calibre} A type ${d.type} <small>(charge ${fr(d.charge)} A)</small>
         <span class="compteur">${d.circuits.length}/${R.circuitsMaxParDifferentiel}</span></h3>
       <table><tbody>
         ${d.circuits.map((c) => `<tr>
@@ -173,12 +190,18 @@ $("form-tableau").addEventListener("submit", (e) => {
       </tbody></table>
     </div>`;
 
+  // La norme demande au moins 3 circuits spécialisés 20 A par logement
+  const f = lireFormulaireTableau();
+  const specialises = [f.four, f.laveVaisselle, f.laveLinge, f.secheLinge, f.congelateur, f.chauffeEau].filter(Boolean).length;
+
   $("resultat-tableau").innerHTML = `
     <div class="carte resultat">
       <p><span class="chiffre">${t.circuits.length}</span> circuits ·
          <span class="chiffre">${t.differentiels.length}</span> différentiels</p>
       <p>Coffret : <strong>${t.rangees} rangée(s) de 13 modules</strong>
          (${t.modulesUtilises} modules utilisés, ${t.modulesAvecReserve} avec 20 % de réserve)</p>
+      ${specialises < 3 ? `<p class="info">⚠️ La norme demande au moins 3 circuits spécialisés 20 A par logement (lave-linge, lave-vaisselle, four, congélateur, micro-ondes, chauffe-eau…). Ici : ${specialises}.</p>` : ""}
+      <p class="source">Différentiels : au moins 2 dont 1 de type A, 8 circuits max chacun, calibre par la règle de l'aval (1 × chauffage et chauffe-eau + 0,5 × le reste).</p>
     </div>
 
     <h2>Répartition</h2>

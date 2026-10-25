@@ -34,7 +34,7 @@ S.forEach((s) => INDEX.push({
   ["calc-tableau", "Générateur de tableau électrique", ["coffret tableau circuits répartition différentiels matériel liste"]],
   ["calc-lux", "Calcul d'éclairage (lux)", ["lux éclairement luminaires lumens éclairage bureau atelier pièce"]],
   ["calc-section", "Calcul de section de câble", ["section câble chute de tension longueur disjoncteur calibre"]],
-  ["calc-differentiels", "Calcul des différentiels", ["interrupteur différentiel 30 mA type A AC nombre surface"]],
+  ["calc-differentiels", "Calcul des différentiels", ["interrupteur différentiel 30 mA type A AC F calibre règle de l'aval nombre"]],
   ["calc-bilan", "Bilan de puissance", ["abonnement kVA puissance compteur appareils"]],
   ["calc-ohm", "Loi d'Ohm", ["tension intensité résistance puissance U I R P"]],
 ].forEach(([id, titre, lignes]) => INDEX.push({ icone: "🧮", titre, lignes, ouvrir: () => ouvrirCalcul(id) }));

@@ -6,8 +6,9 @@
 // =====================================================================
 
 const SEUILS = {
-  terre: 100,      // Ω max (logement)
-  isolement: 1,    // MΩ min sous 500 V — à vérifier
+  terre: 100,         // Ω max (logement, disjoncteur de branchement 500 mA)
+  isolement: 1,       // MΩ sous 500 V : valeur de la CEI 60364-6 actuelle
+  isolementAncien: 0.5, // MΩ sous 500 V : valeur encore citée par beaucoup de guides
 };
 
 // ---------------------------------------------------------------------
@@ -140,13 +141,15 @@ function verdicts(m) {
   const terre = parseFloat(m.terre), iso = parseFloat(m.isolement);
   return {
     terre: isNaN(terre) ? null : terre <= SEUILS.terre,
-    isolement: isNaN(iso) ? null : iso >= SEUILS.isolement,
+    // null = pas de mesure ; "limite" = entre 0,5 et 1 MΩ
+    isolement: isNaN(iso) ? null : iso >= SEUILS.isolement ? true : iso >= SEUILS.isolementAncien ? "limite" : false,
   };
 }
 
 function majVerdicts() {
   const v = verdicts(chantierOuvert.mesures);
   const texte = (ok, seuil) => ok === null ? "" :
+    ok === "limite" ? `<span class="alerte">⚠️ Limite : conforme à 0,5 MΩ, mais la CEI 60364-6 actuelle demande 1 MΩ</span>` :
     ok ? `<span class="ok">✔ Conforme (${seuil})</span>` : `<span class="erreur">✘ Non conforme (${seuil})</span>`;
   $("verdict-terre").innerHTML = texte(v.terre, `≤ ${SEUILS.terre} Ω`);
   $("verdict-isolement").innerHTML = texte(v.isolement, `≥ ${SEUILS.isolement} MΩ`);
@@ -262,7 +265,7 @@ if (!IMPRESSION_POSSIBLE) $("rapport-chantier").hidden = true;
 $("rapport-chantier").addEventListener("click", () => {
   const c = chantierOuvert;
   const v = verdicts(c.mesures);
-  const etat = (ok) => ok === null ? "—" : ok ? "✔ Conforme" : "✘ Non conforme";
+  const etat = (ok) => ok === null ? "—" : ok === "limite" ? "⚠️ Limite (entre 0,5 et 1 MΩ)" : ok ? "✔ Conforme" : "✘ Non conforme";
   const ligne = (nom, valeur, unite, ok) =>
     `<tr><td>${nom}</td><td>${valeur ? echapper(valeur) + " " + unite : "—"}</td><td>${ok === undefined ? "" : etat(ok)}</td></tr>`;
 

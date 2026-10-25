@@ -49,9 +49,9 @@ const SPECIALISES = {
   VE: { nom: "Prise renforcée véhicule", section: 2.5, calibre: 20, typeA: true },
   F: { nom: "Four", section: 2.5, calibre: 20 },
   LV: { nom: "Lave-vaisselle", section: 2.5, calibre: 20 },
-  SL: { nom: "Sèche-linge", section: 2.5, calibre: 20 },
+  SL: { nom: "Sèche-linge", section: 2.5, calibre: 20, typeA: true },
   CG: { nom: "Congélateur", section: 2.5, calibre: 20 },
-  CE: { nom: "Chauffe-eau (via contacteur HC)", section: 2.5, calibre: 20 },
+  CE: { nom: "Chauffe-eau (via contacteur HC)", section: 2.5, calibre: 20, plein: true },
 };
 
 // ---------------------------------------------------------------------
@@ -64,11 +64,14 @@ function circuitsDuPlan(pl) {
   const parPiece = (liste) => [...liste].sort((a, b) =>
     (pieceDe(pl, a)?.id || "~").localeCompare(pieceDe(pl, b)?.id || "~") || a.x - b.x || a.y - b.y);
   const circuits = [];
-  const ajouter = (nom, section, calibre, points, typeA = false) =>
-    circuits.push({ nom, section, calibre, points, commandes: [], typeA, longueur: null });
+  const ajouter = (nom, section, calibre, points, typeA = false, plein = false) =>
+    circuits.push({ nom, section, calibre, points, commandes: [], typeA, plein, longueur: null });
 
-  // Éclairage : 8 points max par circuit
-  paquets(parPiece(de("lumiere", "applique")), 8).forEach((pts, i, tous) =>
+  // Éclairage : 8 points max par circuit, au moins 2 circuits (sauf studio / T1)
+  const lumieres = parPiece(de("lumiere", "applique"));
+  const principales = pl.pieces.filter((p) => ["sejour", "chambre"].includes(p.type)).length;
+  const taille = principales > 1 && lumieres.length > 1 && lumieres.length <= 8 ? Math.ceil(lumieres.length / 2) : 8;
+  paquets(lumieres, taille).forEach((pts, i, tous) =>
     ajouter(`Éclairage${tous.length > 1 ? " " + (i + 1) : ""}`, 1.5, 16, pts));
 
   // Interrupteurs et poussoirs : rattachés au circuit de la lumière la plus proche
@@ -82,10 +85,10 @@ function circuitsDuPlan(pl) {
     if (meilleur) meilleur.commandes.push(cmd);
   });
 
-  // Prises : circuit dédié cuisine (6 max), les autres par 8 en 2,5 mm²
+  // Prises : circuit dédié cuisine (6 max), les autres par 12 en 2,5 mm² / 20 A
   const prises = de("prise");
   const enCuisine = (s) => pieceDe(pl, s)?.type === "cuisine";
-  paquets(parPiece(prises.filter((s) => !enCuisine(s))), 8).forEach((pts, i, tous) =>
+  paquets(parPiece(prises.filter((s) => !enCuisine(s))), 12).forEach((pts, i, tous) =>
     ajouter(`Prises${tous.length > 1 ? " " + (i + 1) : ""}`, 2.5, 20, pts));
   paquets(parPiece(prises.filter(enCuisine)), 6).forEach((pts, i, tous) =>
     ajouter(`Prises cuisine${tous.length > 1 ? " " + (i + 1) : ""}`, 2.5, 20, pts));
@@ -93,7 +96,7 @@ function circuitsDuPlan(pl) {
   // Prises spécialisées : un circuit chacune
   de("prise-specialisee").forEach((s) => {
     const sp = SPECIALISES[s.repere] || { nom: "Prise spécialisée (appareil à préciser)", section: 2.5, calibre: 20 };
-    ajouter(sp.nom, sp.section, sp.calibre, [s], !!sp.typeA);
+    ajouter(sp.nom, sp.section, sp.calibre, [s], !!sp.typeA, !!sp.plein);
   });
 
   if (de("volet").length) ajouter("Volets roulants", 1.5, 16, de("volet"));
@@ -135,7 +138,7 @@ function listeAchat(pl, chantier) {
 
   // --- Tableau électrique
   if (circuits.length) {
-    const tous = [...circuits, { nom: "Tableau de communication", section: 1.5, calibre: 16, typeA: false, longueur: 0 }];
+    const tous = [...circuits, { nom: "Coffret de communication (conseillé)", section: 1.5, calibre: 16, typeA: false, longueur: 0 }];
     const surface = pl.pieces.reduce((t, p) => t + p.w * p.h, 0) || 50;
     const t = completerTableau(tous, { surface, chauffeEau: reperes.includes("CE") });
     ajouter("Tableau électrique", `Coffret ${t.rangees} rangée(s) de 13 modules`, 1);

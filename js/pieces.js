@@ -40,17 +40,19 @@ function ouvrirPiece(id) {
     champSurface.addEventListener("input", () => {
       const surface = parseFloat(champSurface.value);
       $("resultat-piece").innerHTML = surface > 0
-        ? `<p class="info">Pour ${fr(surface)} m² : <span class="chiffre">${prisesMinimum(piece.calcul, surface)}</span> prise(s) 16 A minimum</p>`
+        ? `<p class="info">Pour ${fr(surface)} m² : <span class="chiffre">${prisesMinimum(piece.calcul, surface)}</span> prise(s) 16 A minimum${piece.calcul === "sejour" ? " + 2 pour le multimédia" : ""}</p>`
         : "";
     });
   }
 }
 
-// Nombre minimum de prises selon la surface (aussi utilisé par le générateur de tableau)
+// Nombre minimum de prises selon la surface (NF C 15-100 version 2024)
+// Aussi utilisé par le générateur de tableau et la vérification du plan.
 function prisesMinimum(type, surface) {
-  if (type === "sejour") return Math.max(5, Math.ceil(surface / 4));
+  if (type === "sejour") return surface <= 28 ? Math.max(5, Math.ceil(surface / 4)) : 7;
   if (type === "cuisine") return surface <= 4 ? 3 : 6;
-  if (type === "entree") return surface > 4 ? 1 : 0;
+  if (type === "chambre") return 3;
+  if (["entree", "buanderie"].includes(type)) return surface > 4 ? 1 : 0;
   return 0;
 }
 
